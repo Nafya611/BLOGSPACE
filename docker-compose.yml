@@ -1,0 +1,38 @@
+services:
+
+  app:
+    build:
+      context: .
+      args:
+        - DEV=true
+
+    ports:
+      - 8000:8000
+
+    volumes:
+      - ./BLOG:/app
+    command: sh -c "python manage.py wait_for_db &&
+                    python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DB_HOST: host.docker.internal
+      DB_NAME: BLOGdb
+      DB_USER: postgres
+      DB_PASS: Entrance620
+      ports: 5432:5432
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - ./blog-db-data:/var/lib/postgresql/data
+    environment:
+    - POSTGRES_DB = BLOGdb
+    - POSTGRES_USER = postgres
+    - POSTGRES_PASSWORD = Entrance620
+
+volumes:
+  blog-db-data:
+
+
