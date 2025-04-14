@@ -59,10 +59,10 @@ def create_token(request):
 def manage_user(request):
 
     if request.method =='GET':
-        serializer= UserSerializer(user=request.user)
+        serializer= UserSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
     elif request.method == 'PUT':
-        serializer= UserSerializer(data=request.data,user=request.user,partial=True)
+        serializer= UserSerializer(request.user,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
