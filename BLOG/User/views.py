@@ -68,5 +68,11 @@ def manage_user(request):
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def logout_user(request):
+    request.user.auth_token.delete()
+    return Response({'detail':"successfully logged out"},status=status.HTTP_204_NO_CONTENT)
+
 
 
