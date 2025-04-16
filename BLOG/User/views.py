@@ -68,6 +68,14 @@ def manage_user(request):
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+@extend_schema(
+    methods=["DELETE"],
+    description="Logs out the current user by deleting their auth token.",
+    responses={204: None}
+)
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def logout_user(request):
