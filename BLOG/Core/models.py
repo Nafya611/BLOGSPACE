@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from  BLOG import settings
 
@@ -29,7 +28,7 @@ class UserManger(BaseUserManager):
 
 class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(max_length=100)
-    first_name= models.CharField(max_length=100)
+    first_name= models.CharField(max_length=255)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=255,unique=True)
     password = models.CharField(max_length=100)
@@ -47,3 +46,19 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class Post(models.Model):
+    title=models.CharField(max_length=255)
+    slug=models.CharField(max_length=255)
+    author=models.ForeignKey(User,on_delete=models.CASCADE)
+    content=models.TextField()
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    published_at=models.DateTimeField(auto_now_add=True)
+    is_published=models.BooleanField(default=False)
+    is_draft=models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+

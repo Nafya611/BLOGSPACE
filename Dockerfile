@@ -26,7 +26,7 @@ COPY ./requirements.txt /tmp/requirements.txt
 RUN /venv/bin/pip install -r /tmp/requirements.txt
 
 # Copy your app source code
-COPY ./BLOG /app
+COPY . /app
 
 # Cleanup build dependencies to keep image small
 RUN apk del build-base gcc musl-dev python3-dev libpq-dev
