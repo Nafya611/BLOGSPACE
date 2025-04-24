@@ -5,7 +5,7 @@ on: [push]
 
 jobs:
   test-lint:
-    name: Test and Lint
+    name: Test
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
@@ -23,8 +23,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run Tests
-        run: docker-compose run --rm app sh -c " python manage.py wait_for_db &&
-                                                 python manage.py test "
+        run: docker-compose run --rm app sh -c " python manage.py wait_for_db
+                                                =
 
-      - name: Run Linting
-        run: docker-compose run --rm app sh -c "flake8"

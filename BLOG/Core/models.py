@@ -60,5 +60,5 @@ class Post(models.Model):
     is_draft=models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
+        return self.slug
 

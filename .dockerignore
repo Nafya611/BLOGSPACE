@@ -9,7 +9,7 @@ BLOG/.pytest_cache
 BLOG/*/__pycache__
 BLOG/*/.pytest_cache
 BLOG/*/*/__pycache__
-BLGO/*/*/*/.pytest_cache
+BLOG/*/*/*/.pytest_cache
 BLOG/*/*/*/__pycache__
 .evn/
 .venv/
