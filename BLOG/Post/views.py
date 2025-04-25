@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 
 
 @extend_schema(
-        methods=['POST'],
+        methods=['POST','PATCH'],
         request=PostSerializer,
         responses=PostSerializer
 
@@ -41,34 +41,34 @@ def blog_list(request):
 
 
 @extend_schema(
-        methods=['PUT'],
+        methods=['PUT','PATCH'],
     request=PostSerializer,
     responses=PostSerializer
 )
-@api_view(['PUT','GET','DELETE'])
+@api_view(['GET','PUT','PATCH','DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def blog_detail(request,slug):
+def blog_detail(request, slug):
     post = get_object_or_404(Post, author=request.user, slug=slug)
 
     if request.method == 'GET':
-        serializer=PostSerializer(post)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     elif request.method == 'PUT':
-        serializer=PostSerializer(instance=post,data=request.data)
+        serializer = PostSerializer(instance=post, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PATCH':
+        serializer=PostSerializer(instance=post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
     elif request.method == 'DELETE':
         post.delete()
-        return Response({'message':'deleted successfully'})
-
-
-
-
-
-
-
-
-
+        return Response({'message': 'Deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
