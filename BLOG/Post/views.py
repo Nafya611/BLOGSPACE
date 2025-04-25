@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from Post.serializers import PostSerializer
+from Post.serializers import PostSerializer,TagSerializer
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from Core.models import Post
+from Core.models import Post,Tag,Category
 from django.shortcuts import get_object_or_404
 
 
@@ -72,3 +72,33 @@ def blog_detail(request, slug):
     elif request.method == 'DELETE':
         post.delete()
         return Response({'message': 'Deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Tag
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def tag_list(request):
+    tag=Tag.objects.all()
+    serializer=TagSerializer(tag,many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_tag_slug(request,slug):
+    tag=Tag.objects.filter(user=request.user,slug=slug)
+    serializer=TagSerializer(tag,many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_Post_tag_slug(request,slug):
+    tag=get_object_or_404(Tag,slug=slug)
+    post=Post.objects.filter(author=request.user,tag=tag)
+    serializer=PostSerializer(post,many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+

@@ -48,10 +48,30 @@ class User(AbstractBaseUser,PermissionsMixin):
         return self.username
 
 
+class Category(models.Model):
+    name=models.CharField(max_length=100)
+    slug=models.SlugField(max_length=120)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(models.Model):
+    name=models.CharField(max_length=100)
+    slug=models.SlugField(max_length=120)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
 class Post(models.Model):
     title=models.CharField(max_length=255)
     slug=models.CharField(max_length=255)
     author=models.ForeignKey(User,on_delete=models.CASCADE)
+    tag=models.ManyToManyField(Tag,related_name='posts',blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     content=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -61,4 +81,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.slug
+
+
 
