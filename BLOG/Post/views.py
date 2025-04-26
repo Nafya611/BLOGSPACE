@@ -97,7 +97,7 @@ def get_tag_slug(request,slug):
 @permission_classes([IsAuthenticated])
 def get_Post_tag_slug(request,slug):
     tag=get_object_or_404(Tag,slug=slug)
-    post=Post.objects.filter(author=request.user,tag=tag)
+    post=Post.objects.filter(author=request.user,tag__in=[tag.id])
     serializer=PostSerializer(post,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
