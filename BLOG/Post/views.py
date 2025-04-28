@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from Post.serializers import PostSerializer,TagSerializer
+from Post.serializers import PostSerializer,TagSerializer,CategorySerializer
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema
 from Core.models import Post,Tag,Category
 from django.shortcuts import get_object_or_404
 
-
+#authentication
 
 @extend_schema(
         methods=['POST','PATCH'],
@@ -39,6 +39,8 @@ def blog_list(request):
     serializer=PostSerializer(post,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
+
+#Post
 
 @extend_schema(
         methods=['PUT','PATCH'],
@@ -99,6 +101,34 @@ def get_Post_tag_slug(request,slug):
     tag=get_object_or_404(Tag,slug=slug)
     post=Post.objects.filter(author=request.user,tag__in=[tag.id])
     serializer=PostSerializer(post,many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+## category
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def category_list(request):
+    category = Category.objects.all()
+    serializer = CategorySerializer(category, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_category_slug(request, slug):
+    category = Category.objects.filter(user=request.user, slug=slug)
+    serializer = CategorySerializer(category, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_Post_category_slug(request,slug):
+    category=get_object_or_404(Category,slug=slug)
+    post=Post.objects.get(author=request.user,category=category)
+    serializer=PostSerializer(post)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 

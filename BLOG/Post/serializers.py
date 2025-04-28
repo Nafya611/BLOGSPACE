@@ -40,6 +40,7 @@ class PostSerializer(serializers.ModelSerializer):
             tag_obj, _ = Tag.objects.get_or_create(user=auth_user, **tag)
             post.tag.add(tag_obj)  # use `post.tag` (not post.tags)
 
+
     def create(self, validated_data):
         user = self.context['request'].user
         title = validated_data.get('title')
@@ -47,7 +48,7 @@ class PostSerializer(serializers.ModelSerializer):
 
         # pop correct fields
         tags = validated_data.pop('tag', [])  # corrected 'tag' not 'tags'
-        category_data = validated_data.pop('category', None)
+        categories = validated_data.pop('category', None)
 
         # Ensure uniqueness of slug
         original_slug = slug
@@ -56,20 +57,23 @@ class PostSerializer(serializers.ModelSerializer):
             slug = f"{original_slug}-{counter}"
             counter += 1
 
-        # get or create category
-        category_instance = None
-        if category_data:
-            category_instance, _ = Category.objects.get_or_create(user=user, **category_data)
+
 
         # Create post
         post = Post.objects.create(
             author=user,
             slug=slug,
-            category=category_instance,
             **validated_data
         )
 
+        # Handle category (single ForeignKey)
+        if categories:
+            category_obj, _ = Category.objects.get_or_create(user=user, **categories)
+            post.category = category_obj
+            post.save()
+
         # handle tags
         self._get_or_create_tags(tags, post)
+
 
         return post
