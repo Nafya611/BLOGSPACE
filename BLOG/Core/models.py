@@ -66,9 +66,11 @@ class Tag(models.Model):
         return self.name
 
 
+
+
 class Post(models.Model):
     title=models.CharField(max_length=255)
-    slug=models.CharField(max_length=255)
+    slug=models.SlugField(max_length=255)
     author=models.ForeignKey(User,on_delete=models.CASCADE)
     tag=models.ManyToManyField(Tag,related_name='posts',blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
@@ -81,6 +83,18 @@ class Post(models.Model):
 
     def __str__(self):
         return self.slug
+
+class Comment(models.Model):
+    post=models.ForeignKey(Post,on_delete=models.CASCADE)
+    author=models.ForeignKey(User,on_delete=models.CASCADE)
+    name=models.CharField(max_length=100,blank=True,null=True)
+    email=models.EmailField(blank=True,null=True)
+    content=models.TextField()
+    created_at=models.DateTimeField(auto_now_add=True)
+    is_approved=models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.content
 
 
 

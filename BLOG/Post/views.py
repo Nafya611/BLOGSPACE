@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from Post.serializers import PostSerializer,TagSerializer,CategorySerializer
+from Post.serializers import PostSerializer,TagSerializer,CategorySerializer,CommentSerializer
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from Core.models import Post,Tag,Category
+from Core.models import Post,Tag,Category,Comment
 from django.shortcuts import get_object_or_404
 
 #authentication
@@ -130,5 +130,32 @@ def get_Post_category_slug(request,slug):
     post=Post.objects.get(author=request.user,category=category)
     serializer=PostSerializer(post)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
+@extend_schema(
+        methods=['POST'],
+        request=CommentSerializer,
+        responses=CommentSerializer
+)
+@api_view(['GET','POST'])
+@authentication_classes([TokenAuthentication])
+def comments(request,slug):
+    if request.method=='POST':
+        post=Post.objects.get(slug=slug)
+        serializer=CommentSerializer(post,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    elif request.method== 'GET':
+        post=Post.objects.get(slug=slug)
+        comment=Comment.objects.filter(post=post)
+        serializer=CommentSerializer(comment,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+
+
+
 
 
