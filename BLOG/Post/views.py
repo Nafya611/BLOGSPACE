@@ -138,12 +138,16 @@ def get_Post_category_slug(request,slug):
 )
 @api_view(['GET','POST'])
 @authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def comments(request,slug):
-    if request.method=='POST':
+    try:
         post=Post.objects.get(slug=slug)
-        serializer=CommentSerializer(post,data=request.data)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"},status=status.HTTP_404_NOT_FOUND)
+    if request.method=='POST':
+        serializer=CommentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(post=post)
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     elif request.method== 'GET':
