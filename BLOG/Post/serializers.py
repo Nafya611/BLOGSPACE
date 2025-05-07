@@ -19,8 +19,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model=Comment
-        fields=['name','email','content','created_at','is_approved']
-        read_only_fields = ['id','author','created_at','is_approved']
+        fields=['id','name','email','content','created_at','is_approved','author']
+        read_only_fields = ['id','created_at','is_approved']
 
 class PostSerializer(serializers.ModelSerializer):
     tag = TagSerializer(many=True, required=False)
@@ -28,8 +28,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'slug', 'content', 'tag', 'category', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
+        fields = [ 'title', 'slug', 'content', 'tag', 'category', 'author','created_at', 'updated_at','is_published']
+        read_only_fields = [ 'slug', 'created_at', 'updated_at','is_published']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

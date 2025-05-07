@@ -91,7 +91,7 @@ class Comment(models.Model):
     email=models.EmailField(blank=True,null=True)
     content=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
-    is_approved=models.BooleanField(default=True)
+    is_approved=models.BooleanField(default=False)
 
     def __str__(self):
         return self.content
