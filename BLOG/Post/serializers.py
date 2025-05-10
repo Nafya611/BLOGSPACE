@@ -29,7 +29,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [ 'title', 'slug', 'content', 'tag', 'category', 'author','created_at', 'updated_at','is_published']
-        read_only_fields = [ 'slug', 'created_at', 'updated_at','is_published']
+        read_only_fields = [ 'author','slug', 'created_at', 'updated_at','is_published']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema
 from Core.models import Post,Tag,Category,Comment
 from django.shortcuts import get_object_or_404
 
-#authentication
+#post
 
 @extend_schema(
         methods=['POST','PATCH'],
@@ -35,12 +35,11 @@ def create_post(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def blog_list(request):
-    post=Post.objects.filter(author=request.user)
+    post=Post.objects.filter(author=request.user).order_by("title")
     serializer=PostSerializer(post,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-#Post
 
 @extend_schema(
         methods=['PUT','PATCH'],
@@ -82,7 +81,7 @@ def blog_detail(request, slug):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def tag_list(request):
-    tag=Tag.objects.all()
+    tag=Tag.objects.all().order_by("name")
     serializer=TagSerializer(tag,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -110,7 +109,7 @@ def get_Post_tag_slug(request,slug):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def category_list(request):
-    category = Category.objects.all()
+    category = Category.objects.all().order_by('name')
     serializer = CategorySerializer(category, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -163,7 +162,7 @@ def comments(request,slug):
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def admin_posts(request):
-    post=Post.objects.all()
+    post=Post.objects.all().order_by("title")
     serializer=PostSerializer(post,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -188,7 +187,7 @@ def publish_post(request,slug):
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def admin_comments(request):
-    comment=Comment.objects.all()
+    comment=Comment.objects.all().order_by('-created_at')
     serializer=CommentSerializer(comment,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
