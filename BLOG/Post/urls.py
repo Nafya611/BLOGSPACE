@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  create_post,blog_list,blog_detail,tag_list,get_tag_slug,get_Post_tag_slug,category_list,get_category_slug,get_Post_category_slug,comments,admin_posts,admin_post,publish_post,admin_comments,approve_comment,delete_comment
+from .views import  create_post,blog_list,blog_detail,tag_list,get_tag_slug,get_Post_tag_slug,category_list,get_category_slug,get_Post_category_slug,admin_posts,admin_post,publish_post,admin_comments,approve_comment,delete_comment,send_comment,read_comments
 
 urlpatterns = [
     path('post_blog/',create_post,name='create_post' ),
@@ -11,7 +11,8 @@ urlpatterns = [
     path('category_list/',category_list,name="tags_list"),
     path('catgory_slug/<str:slug>',get_category_slug,name="category_slug"),
     path('post_category_slug/<str:slug>',get_Post_category_slug,name='get_post_catgory_slag'),
-    path('post/<str:slug>/comments',comments,name="create_get_comments_by_slug"),
+    path('post/<str:slug>/send_comment',send_comment,name="send_comments"),
+    path('post/<str:slug>/read_comments',read_comments,name='read_comments'),
     path('admin/posts/',admin_posts,name='all_posts'),
     path('admin/post/<str:slug>',admin_post,name="post"),
     path('admin/publish_post/<str:slug>',publish_post,name="publish_post"),

@@ -6,9 +6,14 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.response import Response
 from rest_framework import response
 from rest_framework import status
-from drf_spectacular.utils import extend_schema
+from rest_framework.pagination import PageNumberPagination
+from drf_spectacular.utils import extend_schema , OpenApiParameter# type: ignore
 from Core.models import Post,Tag,Category,Comment
 from django.shortcuts import get_object_or_404
+
+
+
+
 
 #post
 
@@ -29,17 +34,25 @@ def create_post(request):
         return Response(serializer.data,status=status.HTTP_201_CREATED)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(name='page', type=int, location=OpenApiParameter.QUERY, description='Page number'),
 
-
+    ],
+    responses={200: PostSerializer(many=True)}
+)
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def blog_list(request):
-    post=Post.objects.filter(author=request.user).order_by("title")
-    serializer=PostSerializer(post,many=True)
-    return Response(serializer.data,status=status.HTTP_200_OK)
+    paginator = PageNumberPagination()
+    paginator.page_size = 3
 
+    posts = Post.objects.filter(author=request.user).order_by("title")
+    result_page = paginator.paginate_queryset(posts, request)
+    serializer = PostSerializer(result_page, many=True)
 
+    return paginator.get_paginated_response(serializer.data)
 
 @extend_schema(
         methods=['PUT','PATCH'],
@@ -133,38 +146,77 @@ def get_Post_category_slug(request,slug):
 #comment
 
 @extend_schema(
-        methods=['POST'],
-        request=CommentSerializer,
-        responses=CommentSerializer
+
+        parameters=[
+        OpenApiParameter(name='page', type=int, location=OpenApiParameter.QUERY, description='Page number'),
+
+    ],
+    responses={200: CommentSerializer(many=True)}
+
 )
-@api_view(['GET','POST'])
+@api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def comments(request,slug):
+def read_comments(request,slug):
     try:
         post=Post.objects.get(slug=slug)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"},status=status.HTTP_404_NOT_FOUND)
-    if request.method=='POST':
-        serializer=CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(post=post)
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    elif request.method== 'GET':
+    post=Post.objects.get(slug=slug)
+
+    paginator=PageNumberPagination()
+    paginator.page_size= 1
+    comment=Comment.objects.filter(post=post).order_by('-created_at')
+    paginated_comment=paginator.paginate_queryset(comment,request)
+
+    serializer=CommentSerializer(paginated_comment,many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@extend_schema(
+        methods=['POST'],
+        request=CommentSerializer,
+        responses=CommentSerializer
+
+
+)
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def send_comment(request,slug):
+    try:
         post=Post.objects.get(slug=slug)
-        comment=Comment.objects.filter(post=post)
-        serializer=CommentSerializer(comment,many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"},status=status.HTTP_404_NOT_FOUND)
+
+    serializer=CommentSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(post=post)
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
+    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 # Admin
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(name='page', type=int, location=OpenApiParameter.QUERY, description='Page number'),
+
+    ],
+    responses={200: PostSerializer(many=True)}
+)
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def admin_posts(request):
-    post=Post.objects.all().order_by("title")
-    serializer=PostSerializer(post,many=True)
-    return Response(serializer.data,status=status.HTTP_200_OK)
+
+     paginator = PageNumberPagination()
+     paginator.page_size = 3
+
+     posts = Post.objects.all().order_by("title")
+     result_page = paginator.paginate_queryset(posts, request)
+     serializer = PostSerializer(result_page, many=True)
+
+     return paginator.get_paginated_response(serializer.data)
+
+
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
@@ -183,13 +235,24 @@ def publish_post(request,slug):
         serializer.save()
         return Response(serializer.data,status=status.HTTP_200_OK)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+@extend_schema(
+    parameters=[
+        OpenApiParameter(name='page', type=int, location=OpenApiParameter.QUERY, description='Page number'),
+
+    ],
+    responses={200: CommentSerializer(many=True)}
+)
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def admin_comments(request):
+    paginator=PageNumberPagination()
+    paginator.page_size=1
+
     comment=Comment.objects.all().order_by('-created_at')
-    serializer=CommentSerializer(comment,many=True)
-    return Response(serializer.data,status=status.HTTP_200_OK)
+    query_result=paginator.paginate_queryset(comment,request)
+    serializer=CommentSerializer(query_result,many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['PUT'])
