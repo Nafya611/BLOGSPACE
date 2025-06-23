@@ -33,6 +33,10 @@ function App() {
     setUser(userData);
   };
 
+  const handleUserUpdate = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
   const handleLogout = async () => {
     try {
       await authApi.logout();
@@ -99,7 +103,7 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard user={user} />
+                  <Dashboard user={user} onUserUpdate={handleUserUpdate} />
                 </ProtectedRoute>
               }
             />
