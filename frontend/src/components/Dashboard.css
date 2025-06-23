@@ -1,0 +1,49 @@
+/* Dashboard component styles */
+.dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.dashboard-header h2 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.user-info-summary {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.user-info-summary p {
+  margin: 0.5rem 0;
+  color: #4a5568;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.blog-section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.blog-section h3 {
+  margin-top: 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e1e8ed;
+  color: #2c3e50;
+}

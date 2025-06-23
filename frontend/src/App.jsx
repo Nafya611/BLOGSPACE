@@ -1,19 +1,121 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import BlogList from './components/BlogList';
+import AuthContainer from './components/AuthContainer';
+import Dashboard from './components/Dashboard';
+import { authApi } from './services/authApi';
 import './components/BlogList.css';
+import './components/Dashboard.css';
 import './App.css';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  // Check for existing auth token on app load
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const userData = await authApi.getUserProfile();
+          setUser(userData);
+        } catch (error) {
+          // Token might be invalid, clear it
+          localStorage.removeItem('authToken');
+        }
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+    // Even if the logout API fails, clear local state
+    setUser(null);
+    localStorage.removeItem('authToken');
+  };
+
+  // Protected route component
+  const ProtectedRoute = ({ children }) => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Blog Frontend</h1>
-        <p>React frontend connected to Django REST API</p>
-      </header>
-      <main>
-        <BlogList />
-      </main>
-    </div>
+    <Router>
+      <div className="App">
+        <header className="App-header">
+          <h1>Blog Frontend</h1>
+          <p>React frontend connected to Django REST API</p>
+
+          <nav className="nav-buttons">
+            <button
+              onClick={() => window.location.href = '/blog'}
+              className="nav-button"
+            >
+              Blog
+            </button>
+
+            {user ? (
+              <>
+                <button
+                  onClick={() => window.location.href = '/dashboard'}
+                  className="nav-button"
+                >
+                  Dashboard
+                </button>
+                <span className="user-greeting">Hello, {user.username}!</span>
+                <button onClick={handleLogout} className="nav-button logout">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => window.location.href = '/login'}
+                className="nav-button"
+              >
+                Login/Signup
+              </button>
+            )}
+          </nav>
+        </header>
+
+        <main>
+          <Routes>
+            <Route path="/" element={<BlogList />} />
+            <Route path="/blog" element={<BlogList />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard user={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                user ?
+                <Navigate to="/dashboard" replace /> :
+                <AuthContainer onAuthSuccess={handleAuthSuccess} />
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 

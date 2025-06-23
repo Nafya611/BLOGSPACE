@@ -1,10 +1,13 @@
 // API configuration for the Django backend
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+// Access import.meta.env instead of process.env in Vite projects
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const API_ENDPOINTS = {
   // Authentication endpoints
-  LOGIN: '/api-auth/login/',
-  LOGOUT: '/api-auth/logout/',
+  LOGIN: '/api/user/token/',
+  SIGNUP: '/api/user/signup/',
+  LOGOUT: '/api/user/logout/',
+  USER_PROFILE: '/api/user/me',
 
   // Post endpoints (matching Django URLs)
   POSTS: '/api/Post/blog_list/',

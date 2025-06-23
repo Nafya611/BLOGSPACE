@@ -172,3 +172,27 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Node.js
+/node_modules/
+*/node_modules/
+frontend/node_modules/
+/package-lock.json
+/package.json
+frontend/.pnp
+frontend/.pnp.js
+
+# Node.js build outputs
+frontend/dist/
+frontend/dist-ssr/
+frontend/build/
+frontend/*.local
+
+# Vite
+/.vite/
+
+# Frontend cache and logs
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.npm
+frontend/.eslintcache
