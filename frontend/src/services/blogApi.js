@@ -14,42 +14,22 @@ export const blogApi = {
     }
   },
 
-  async getPost(id) {
+  async getPost(slug) {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.POST_DETAIL(id));
+      const response = await apiClient.get(API_ENDPOINTS.POST_DETAIL(slug));
       return response.data;
     } catch (error) {
-      console.error(`Error fetching post ${id}:`, error);
+      console.error(`Error fetching post ${slug}:`, error);
       throw error;
     }
   },
 
   async createPost(postData) {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.POSTS, postData);
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_POST, postData);
       return response.data;
     } catch (error) {
       console.error('Error creating post:', error);
-      throw error;
-    }
-  },
-
-  async updatePost(id, postData) {
-    try {
-      const response = await apiClient.put(API_ENDPOINTS.POST_DETAIL(id), postData);
-      return response.data;
-    } catch (error) {
-      console.error(`Error updating post ${id}:`, error);
-      throw error;
-    }
-  },
-
-  async deletePost(id) {
-    try {
-      await apiClient.delete(API_ENDPOINTS.POST_DETAIL(id));
-      return true;
-    } catch (error) {
-      console.error(`Error deleting post ${id}:`, error);
       throw error;
     }
   },
@@ -65,23 +45,54 @@ export const blogApi = {
     }
   },
 
-  // Comment-related API calls
-  async getComments(postId) {
+  async getPostsByCategory(slug) {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.COMMENTS(postId));
+      const response = await apiClient.get(API_ENDPOINTS.CATEGORY_POSTS(slug));
       return response.data;
     } catch (error) {
-      console.error(`Error fetching comments for post ${postId}:`, error);
+      console.error(`Error fetching posts for category ${slug}:`, error);
       throw error;
     }
   },
 
-  async createComment(postId, commentData) {
+  // Tag-related API calls
+  async getTags() {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.COMMENTS(postId), commentData);
+      const response = await apiClient.get(API_ENDPOINTS.TAGS);
       return response.data;
     } catch (error) {
-      console.error(`Error creating comment for post ${postId}:`, error);
+      console.error('Error fetching tags:', error);
+      throw error;
+    }
+  },
+
+  async getPostsByTag(slug) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.TAG_POSTS(slug));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching posts for tag ${slug}:`, error);
+      throw error;
+    }
+  },
+
+  // Comment-related API calls
+  async getComments(slug) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.READ_COMMENTS(slug));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching comments for post ${slug}:`, error);
+      throw error;
+    }
+  },
+
+  async createComment(slug, commentData) {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.SEND_COMMENT(slug), commentData);
+      return response.data;
+    } catch (error) {
+      console.error(`Error creating comment for post ${slug}:`, error);
       throw error;
     }
   },
