@@ -16,8 +16,26 @@ apiClient.interceptors.request.use(
     // Add authentication token if available
     const token = localStorage.getItem('authToken');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Django TokenAuthentication expects 'Token <token>' format
+      config.headers.Authorization = `Token ${token}`;
     }
+
+    // If data is FormData, remove Content-Type header to let browser set it
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    } else {
+      // Ensure Content-Type is set for JSON data
+      config.headers['Content-Type'] = 'application/json';
+    }
+
+    // Debug logging
+    console.log('API Request:', {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data
+    });
+
     return config;
   },
   (error) => {

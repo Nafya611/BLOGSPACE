@@ -3,13 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import UserProfile from './UserProfile';
 import BlogList from './BlogList';
+import CreatePost from './CreatePost';
 import { authApi } from '../services/authApi';
 import './Sidebar.css';
+import './CreatePost.css';
 
 const Dashboard = ({ user: initialUser, onUserUpdate }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [user, setUser] = useState(initialUser);
   const [loading, setLoading] = useState(false);
+  const [refreshPosts, setRefreshPosts] = useState(0);
   const navigate = useNavigate();
 
   // Fetch fresh user data on component mount
@@ -32,12 +35,19 @@ const Dashboard = ({ user: initialUser, onUserUpdate }) => {
 
     fetchUserProfile();
   }, [user, onUserUpdate]);
-
   const handleUserUpdate = (updatedUser) => {
     setUser(updatedUser);
     if (onUserUpdate) {
       onUserUpdate(updatedUser);
     }
+  };
+  const handlePostCreated = (newPost) => {
+    // Trigger refresh for BlogList components
+    setRefreshPosts(prev => prev + 1);
+    // Switch to blogs section to show the new post
+    setActiveSection('blogs');
+    // You could also add a success message here
+    console.log('Post created successfully:', newPost);
   };
 
   const handleLogout = async () => {
@@ -72,10 +82,9 @@ const Dashboard = ({ user: initialUser, onUserUpdate }) => {
                 <h3>Member Since</h3>
                 <p>{user?.date_joined ? new Date(user.date_joined).toLocaleDateString() : 'Recently'}</p>
               </div>
-            </div>
-            <div className="recent-activity">
+            </div>            <div className="recent-activity">
               <h2>Recent Activity</h2>
-              <BlogList />
+              <BlogList refreshTrigger={refreshPosts} />
             </div>
           </div>
         );
@@ -85,13 +94,19 @@ const Dashboard = ({ user: initialUser, onUserUpdate }) => {
           <div className="profile-section">
             <UserProfile user={user} onUserUpdate={handleUserUpdate} />
           </div>
-        );
-
-      case 'blogs':
+        );      case 'create-post':
+        return (
+          <div className="create-post-section">
+            <CreatePost
+              onPostCreated={handlePostCreated}
+              onCancel={() => setActiveSection('blogs')}
+            />
+          </div>
+        );      case 'blogs':
         return (
           <div className="blogs-section">
             <h1>My Blog Posts</h1>
-            <BlogList />
+            <BlogList refreshTrigger={refreshPosts} />
           </div>
         );
 

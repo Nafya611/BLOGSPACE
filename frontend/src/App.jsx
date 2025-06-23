@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import BlogList from './components/BlogList';
 import AuthContainer from './components/AuthContainer';
 import Dashboard from './components/Dashboard';
@@ -8,8 +8,9 @@ import './components/BlogList.css';
 import './components/Dashboard.css';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   // Check for existing auth token on app load
   useEffect(() => {
@@ -21,6 +22,7 @@ function App() {
           setUser(userData);
         } catch (error) {
           // Token might be invalid, clear it
+          console.error('Auth check failed:', error);
           localStorage.removeItem('authToken');
         }
       }
@@ -46,6 +48,7 @@ function App() {
     // Even if the logout API fails, clear local state
     setUser(null);
     localStorage.removeItem('authToken');
+    navigate('/');
   };
 
   // Protected route component
@@ -57,68 +60,74 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
-        <header className="App-header">
-          <h1>Blog Frontend</h1>
-          <p>React frontend connected to Django REST API</p>
+    <div className="App">
+      <header className="App-header">
+        <h1>Blog Frontend</h1>
+        <p>React frontend connected to Django REST API</p>
 
-          <nav className="nav-buttons">
-            <button
-              onClick={() => window.location.href = '/blog'}
-              className="nav-button"
-            >
-              Blog
-            </button>
+        <nav className="nav-buttons">
+          <button
+            onClick={() => navigate('/blog')}
+            className="nav-button"
+          >
+            Blog
+          </button>
 
-            {user ? (
-              <>
-                <button
-                  onClick={() => window.location.href = '/dashboard'}
-                  className="nav-button"
-                >
-                  Dashboard
-                </button>
-                <span className="user-greeting">Hello, {user.username}!</span>
-                <button onClick={handleLogout} className="nav-button logout">
-                  Logout
-                </button>
-              </>
-            ) : (
+          {user ? (
+            <>
               <button
-                onClick={() => window.location.href = '/login'}
+                onClick={() => navigate('/dashboard')}
                 className="nav-button"
               >
-                Login/Signup
+                Dashboard
               </button>
-            )}
-          </nav>
-        </header>
+              <span className="user-greeting">Hello, {user.username}!</span>
+              <button onClick={handleLogout} className="nav-button logout">
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="nav-button"
+            >
+              Login/Signup
+            </button>
+          )}
+        </nav>
+      </header>
 
-        <main>
-          <Routes>
-            <Route path="/" element={<BlogList />} />
-            <Route path="/blog" element={<BlogList />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard user={user} onUserUpdate={handleUserUpdate} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                user ?
-                <Navigate to="/dashboard" replace /> :
-                <AuthContainer onAuthSuccess={handleAuthSuccess} />
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
+      <main>
+        <Routes>
+          <Route path="/" element={<BlogList />} />
+          <Route path="/blog" element={<BlogList />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard user={user} onUserUpdate={handleUserUpdate} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              user ?
+              <Navigate to="/dashboard" replace /> :
+              <AuthContainer onAuthSuccess={handleAuthSuccess} />
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

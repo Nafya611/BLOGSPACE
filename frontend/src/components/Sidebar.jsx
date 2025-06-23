@@ -1,7 +1,6 @@
 import React from 'react';
 
-const Sidebar = ({ activeSection, onSectionChange, user, onLogout }) => {
-  const menuItems = [
+const Sidebar = ({ activeSection, onSectionChange, user, onLogout }) => {  const menuItems = [
     {
       id: 'overview',
       label: 'Dashboard Overview',
@@ -13,8 +12,13 @@ const Sidebar = ({ activeSection, onSectionChange, user, onLogout }) => {
       icon: '👤'
     },
     {
+      id: 'create-post',
+      label: 'Create Post',
+      icon: '✍️'
+    },
+    {
       id: 'blogs',
-      label: 'Blog Posts',
+      label: 'My Posts',
       icon: '📝'
     },
     {
@@ -31,10 +35,9 @@ const Sidebar = ({ activeSection, onSectionChange, user, onLogout }) => {
           <div className="avatar-circle">
             {user?.first_name ? user.first_name.charAt(0).toUpperCase() : user?.username?.charAt(0).toUpperCase() || 'U'}
           </div>
-        </div>
-        <div className="user-info">
-          <h3>{user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.username}</h3>
-          <p>{user?.email}</p>
+        </div>        <div className="user-info">
+          <h3>{user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : (user?.username || 'User')}</h3>
+          <p>{user?.email || ''}</p>
         </div>
       </div>
 
