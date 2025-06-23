@@ -8,7 +8,7 @@ import { authApi } from '../services/authApi';
 import './Sidebar.css';
 import './CreatePost.css';
 
-const Dashboard = ({ user: initialUser, onUserUpdate }) => {
+const Dashboard = ({ user: initialUser, onUserUpdate, onLogout }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [user, setUser] = useState(initialUser);
   const [loading, setLoading] = useState(false);
@@ -49,17 +49,20 @@ const Dashboard = ({ user: initialUser, onUserUpdate }) => {
     // You could also add a success message here
     console.log('Post created successfully:', newPost);
   };
-
   const handleLogout = async () => {
-    try {
-      await authApi.logout();
-      localStorage.removeItem('authToken');
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Clear local state even if API call fails
-      localStorage.removeItem('authToken');
-      navigate('/login');
+    if (onLogout) {
+      await onLogout();
+    } else {
+      // Fallback if onLogout is not provided
+      try {
+        await authApi.logout();
+        localStorage.removeItem('authToken');
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout failed:', error);
+        localStorage.removeItem('authToken');
+        navigate('/login');
+      }
     }
   };
 

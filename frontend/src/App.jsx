@@ -105,7 +105,7 @@ function AppContent() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard user={user} onUserUpdate={handleUserUpdate} />
+                <Dashboard user={user} onUserUpdate={handleUserUpdate} onLogout={handleLogout} />
               </ProtectedRoute>
             }
           />
