@@ -5,40 +5,84 @@ const BlogList = ({ refreshTrigger }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const data = await blogApi.getPosts();
+  const [pagination, setPagination] = useState({
+    count: 0,
+    next: null,
+    previous: null,
+    currentPage: 1
+  });
 
-        // Handle different response formats
-        if (Array.isArray(data)) {
-          setPosts(data);
-        } else if (data && Array.isArray(data.results)) {
-          // Handle paginated response
-          setPosts(data.results);
-        } else if (data && data.posts && Array.isArray(data.posts)) {
-          // Handle nested posts array
-          setPosts(data.posts);
-        } else {
-          // Fallback: set empty array if data structure is unexpected
-          console.warn('Unexpected API response format:', data);
-          setPosts([]);
-        }
+  const fetchPosts = async (page = 1) => {
+    try {
+      setLoading(true);
+      const data = await blogApi.getPosts({ page });
 
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch posts: ' + err.message);
-        console.error('Error fetching posts:', err);
-        // Set empty array on error to prevent map error
+      // Handle paginated response
+      if (data && data.results && Array.isArray(data.results)) {
+        setPosts(data.results);
+        setPagination({
+          count: data.count || 0,
+          next: data.next,
+          previous: data.previous,
+          currentPage: page
+        });
+      } else if (Array.isArray(data)) {
+        // Handle non-paginated response (fallback)
+        setPosts(data);
+        setPagination({
+          count: data.length,
+          next: null,
+          previous: null,
+          currentPage: 1
+        });
+      } else {
+        // Fallback: set empty array if data structure is unexpected
+        console.warn('Unexpected API response format:', data);
         setPosts([]);
-      } finally {
-        setLoading(false);
+        setPagination({
+          count: 0,
+          next: null,
+          previous: null,
+          currentPage: 1
+        });
       }
-    };
 
-    fetchPosts();
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch posts: ' + err.message);
+      console.error('Error fetching posts:', err);
+      // Set empty array on error to prevent map error
+      setPosts([]);
+      setPagination({
+        count: 0,
+        next: null,
+        previous: null,
+        currentPage: 1
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts(1);
   }, [refreshTrigger]);
+
+  const handlePageChange = (page) => {
+    fetchPosts(page);
+  };
+
+  const handleNextPage = () => {
+    if (pagination.next) {
+      handlePageChange(pagination.currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (pagination.previous) {
+      handlePageChange(pagination.currentPage - 1);
+    }
+  };
 
   if (loading) {
     return (
@@ -85,8 +129,37 @@ const BlogList = ({ refreshTrigger }) => {
                     typeof post.category === 'object' && post.category.name ? post.category.name : 'Category'}
                 </span>
               )}
-            </article>
-          ))}
+            </article>          ))}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {pagination.count > 5 && (
+        <div className="pagination">
+          <div className="pagination-info">
+            <span>
+              Showing {posts.length} of {pagination.count} posts
+            </span>
+          </div>
+          <div className="pagination-controls">
+            <button
+              onClick={handlePreviousPage}
+              disabled={!pagination.previous}
+              className="pagination-btn"
+            >
+              Previous
+            </button>
+            <span className="page-info">
+              Page {pagination.currentPage}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={!pagination.next}
+              className="pagination-btn"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>
