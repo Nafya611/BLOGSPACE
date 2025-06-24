@@ -1,15 +1,16 @@
 /* Dashboard layout styles */
-.dashboard-layout {
-  display: flex;
+.dashboard-container {
   min-height: 100vh;
   background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard-main {
   flex: 1;
-  margin-left: 280px; /* Sidebar width */
   padding: 2rem;
   overflow-y: auto;
+  margin-top: 80px; /* Top nav height */
 }
 
 .dashboard-loading {
@@ -157,22 +158,329 @@
   background: #5a67d8;
 }
 
+/* Top Navigation Styles */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.nav-left .nav-logo {
+  color: #667eea;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: #667eea;
+  background: #f0f2ff;
+}
+
+.nav-link.active {
+  color: #667eea;
+  background: #f0f2ff;
+  font-weight: 600;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: #667eea;
+  border-radius: 1px;
+}
+
+/* Profile Dropdown */
+.nav-right {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.profile-btn:hover {
+  background: #f8f9fa;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.profile-name {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+  color: #6c757d;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 1001;
+  border: 1px solid #e9ecef;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: #2c3e50;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: #f8f9fa;
+}
+
+.dropdown-item.logout {
+  color: #dc3545;
+}
+
+.dropdown-item.logout:hover {
+  background: #fef2f2;
+}
+
+.dropdown-icon {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e9ecef;
+  margin: 0.5rem 0;
+}
+
+/* Dashboard Header with Action Buttons */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.create-post-btn,
+.view-posts-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.create-post-btn:hover,
+.view-posts-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #5a6268;
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.section-header h1 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
+  .top-nav {
+    padding: 0 1rem;
+  }
+
+  .nav-center {
+    display: none; /* Hide nav links on mobile - could add a hamburger menu */
+  }
+
+  .nav-left .nav-logo {
+    font-size: 1.3rem;
+  }
+
   .dashboard-main {
-    margin-left: 0;
     padding: 1rem;
+    margin-top: 70px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .create-post-btn,
+  .view-posts-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-overview h1 {
-    font-size: 2rem;
+  .profile-name {
+    display: none; /* Hide name on very small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .top-nav {
+    height: 60px;
   }
 
-  .sidebar {
-    display: none; /* Hide sidebar on mobile - could implement a toggle */
+  .dashboard-main {
+    margin-top: 60px;
+    padding: 0.5rem;
+  }
+
+  .profile-avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
   }
 }

@@ -70,3 +70,127 @@
 main {
   padding: 2rem 0;
 }
+
+/* Global Button Styles for Consistency */
+.btn,
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.success-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  min-height: 44px; /* Ensure minimum touch target */
+}
+
+.btn:hover,
+.primary-btn:hover,
+.secondary-btn:hover,
+.danger-btn:hover,
+.success-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.secondary-btn {
+  background: #6c757d;
+}
+
+.secondary-btn:hover {
+  background: #5a6268;
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+}
+
+.danger-btn {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.danger-btn:hover {
+  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+.success-btn {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.success-btn:hover {
+  box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+}
+
+.btn:disabled,
+.primary-btn:disabled,
+.secondary-btn:disabled,
+.danger-btn:disabled,
+.success-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Small button variant */
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  min-height: 36px;
+}
+
+/* Large button variant */
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  min-height: 52px;
+}
+
+/* Override any default button styles that might appear black */
+button {
+  color: inherit;
+  font-family: inherit;
+}
+
+/* Ensure any unstyled buttons get basic styling */
+button:not([class]) {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+button:not([class]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Form specific button styles */
+form button:not([class]) {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+form button:not([class]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}

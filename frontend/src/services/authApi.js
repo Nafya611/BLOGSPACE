@@ -57,14 +57,17 @@ export const authApi = {
       throw error;
     }
   },
-
   // Update user profile
   async updateUserProfile(userData) {
     try {
+      console.log('Updating profile with data:', userData);
       const response = await apiClient.put(API_ENDPOINTS.USER_PROFILE, userData);
+      console.log('Profile update response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error updating user profile:', error);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
       throw error;
     }
   },

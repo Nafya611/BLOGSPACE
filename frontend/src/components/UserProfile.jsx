@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authApi } from '../services/authApi';
+import './UserProfile.css';
 
 const UserProfile = ({ user, onUserUpdate }) => {
   const [formData, setFormData] = useState({
