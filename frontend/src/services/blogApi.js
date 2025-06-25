@@ -34,6 +34,26 @@ export const blogApi = {
     }
   },
 
+  async updatePost(slug, postData) {
+    try {
+      const response = await apiClient.patch(API_ENDPOINTS.POST_DETAIL(slug), postData);
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating post ${slug}:`, error);
+      throw error;
+    }
+  },
+
+  async deletePost(slug) {
+    try {
+      const response = await apiClient.delete(API_ENDPOINTS.POST_DETAIL(slug));
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting post ${slug}:`, error);
+      throw error;
+    }
+  },
+
   // Category-related API calls
   async getCategories() {
     try {

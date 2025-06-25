@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { blogApi } from '../services/blogApi';
+import EditPost from './EditPost';
 
 const BlogList = ({ refreshTrigger }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingPost, setEditingPost] = useState(null);
   const [pagination, setPagination] = useState({
     count: 0,
     next: null,
@@ -22,6 +24,12 @@ const BlogList = ({ refreshTrigger }) => {
         setPosts(data.results);
         setPagination({
           count: data.count || 0,
+          next: data.next,
+          previous: data.previous,
+          currentPage: page
+        });
+        console.log('Pagination data:', {
+          count: data.count,
           next: data.next,
           previous: data.previous,
           currentPage: page
@@ -84,6 +92,50 @@ const BlogList = ({ refreshTrigger }) => {
     }
   };
 
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+  };
+
+  const handlePostUpdated = (updatedPost) => {
+    // Update the post in the posts array
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post.slug === updatedPost.slug ? updatedPost : post
+      )
+    );
+    setEditingPost(null);
+
+    // Optionally refetch to ensure data consistency
+    // fetchPosts(pagination.currentPage);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPost(null);
+  };
+
+  const handleDeletePost = async (post) => {
+    if (window.confirm(`Are you sure you want to delete "${post.title}"?`)) {
+      try {
+        await blogApi.deletePost(post.slug);
+
+        // Check if we need to go to previous page (if current page becomes empty)
+        const remainingPostsOnPage = posts.length - 1;
+        const shouldGoToPreviousPage = remainingPostsOnPage === 0 && pagination.currentPage > 1;
+
+        if (shouldGoToPreviousPage) {
+          // Go to previous page
+          fetchPosts(pagination.currentPage - 1);
+        } else {
+          // Refetch current page to maintain proper pagination
+          fetchPosts(pagination.currentPage);
+        }
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        setError(`Failed to delete post: ${error.message}`);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="blog-list">
@@ -109,32 +161,61 @@ const BlogList = ({ refreshTrigger }) => {
       <h2>Blog Posts</h2>
       {!Array.isArray(posts) || posts.length === 0 ? (
         <p>No posts available.</p>
-      ) : (
-        <div className="posts-grid">          {posts.map((post, index) => (
-            <article key={post.id || post.slug || index} className="post-card">
-              <h3>{post.title || 'Untitled'}</h3>
-              <p className="post-meta">
-                {post.created_at && new Date(post.created_at).toLocaleDateString()}
-                {post.author && (typeof post.author === 'string' ? ` by ${post.author}` :
-                  typeof post.author === 'object' && post.author.username ? ` by ${post.author.username}` : '')}
-              </p>
-              {post.content && (
-                <div className="post-excerpt">
-                  {String(post.content).substring(0, 150)}...
-                </div>
+      ) : (        <div className="posts-grid">
+          {posts.map((post, index) => (
+            <div key={post.id || post.slug || index}>
+              {editingPost && editingPost.slug === post.slug ? (
+                <EditPost
+                  post={post}
+                  onPostUpdated={handlePostUpdated}
+                  onCancel={handleCancelEdit}
+                />
+              ) : (
+                <article className="post-card">
+                  <div className="post-header">
+                    <h3>{post.title || 'Untitled'}</h3>
+                    <div className="post-actions">
+                      <button
+                        onClick={() => handleEditPost(post)}
+                        className="edit-btn"
+                        title="Edit post"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDeletePost(post)}
+                        className="delete-btn"
+                        title="Delete post"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                  <p className="post-meta">
+                    {post.created_at && new Date(post.created_at).toLocaleDateString()}
+                    {post.author && (typeof post.author === 'string' ? ` by ${post.author}` :
+                      typeof post.author === 'object' && post.author.username ? ` by ${post.author.username}` : '')}
+                  </p>
+                  {post.content && (
+                    <div className="post-excerpt">
+                      {String(post.content).substring(0, 150)}...
+                    </div>
+                  )}
+                  {post.category && (
+                    <span className="post-category">
+                      {typeof post.category === 'string' ? post.category :
+                        typeof post.category === 'object' && post.category.name ? post.category.name : 'Category'}
+                    </span>
+                  )}
+                </article>
               )}
-              {post.category && (
-                <span className="post-category">
-                  {typeof post.category === 'string' ? post.category :
-                    typeof post.category === 'object' && post.category.name ? post.category.name : 'Category'}
-                </span>
-              )}
-            </article>          ))}
+            </div>
+          ))}
         </div>
       )}
 
       {/* Pagination Controls */}
-      {pagination.count > 5 && (
+      {pagination.count > 3 && (pagination.next || pagination.previous) && (
         <div className="pagination">
           <div className="pagination-info">
             <span>
