@@ -172,6 +172,15 @@ const BlogList = ({ refreshTrigger }) => {
                 />
               ) : (
                 <article className="post-card">
+                  {post.image && (
+                    <div className="post-image">
+                      <img
+                        src={post.image}
+                        alt={post.title || 'Post image'}
+                        className="post-thumbnail"
+                      />
+                    </div>
+                  )}
                   <div className="post-header">
                     <h3>{post.title || 'Untitled'}</h3>
                     <div className="post-actions">

@@ -75,50 +75,103 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
       setNewTag('');
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSuccess('');    try {      // Prepare the post data
-      const postData = {
-        title: formData.title,
-        content: formData.content,
-        is_published: formData.status === 'published',
-        is_draft: formData.status === 'draft'
-      };      // Add category if selected
-      if (formData.category) {
-        const selectedCategory = categories.find(cat => cat.id === formData.category);
-        if (selectedCategory) {
-          postData.category = {
-            name: selectedCategory.name,
-            slug: selectedCategory.slug
-          };
-        }
-      }// Add tags if selected
-      if (formData.tag.length > 0) {
-        const tagData = [];        for (const tagId of formData.tag) {
-          const selectedTag = tags.find(tag => tag.id === tagId);
-          if (selectedTag) {
-            tagData.push({
-              name: selectedTag.name,
-              slug: selectedTag.slug
-            });
+    setSuccess('');
+
+    try {
+      let response;
+
+      // Check if we have an image to upload
+      const hasImage = formData.image && formData.image instanceof File;
+
+      if (hasImage) {
+        // Use FormData for file upload
+        const formDataToSend = new FormData();
+
+        // Add basic fields
+        formDataToSend.append('title', formData.title);
+        formDataToSend.append('content', formData.content);
+        formDataToSend.append('is_published', formData.status === 'published');
+        formDataToSend.append('is_draft', formData.status === 'draft');
+
+        // Add image
+        formDataToSend.append('image', formData.image);
+
+        // Add category if selected (as JSON string for FormData)
+        if (formData.category) {
+          const selectedCategory = categories.find(cat => cat.id === formData.category);
+          if (selectedCategory) {
+            formDataToSend.append('category', JSON.stringify({
+              name: selectedCategory.name,
+              slug: selectedCategory.slug
+            }));
           }
         }
-        if (tagData.length > 0) {
-          postData.tag = tagData;
+
+        // Add tags if selected (as JSON string for FormData)
+        if (formData.tag.length > 0) {
+          const tagData = [];
+          for (const tagId of formData.tag) {
+            const selectedTag = tags.find(tag => tag.id === tagId);
+            if (selectedTag) {
+              tagData.push({
+                name: selectedTag.name,
+                slug: selectedTag.slug
+              });
+            }
+          }
+          if (tagData.length > 0) {
+            formDataToSend.append('tag', JSON.stringify(tagData));
+          }
         }
+
+        console.log('Sending FormData with image');
+        response = await blogApi.createPost(formDataToSend);
+
+      } else {
+        // Use regular JSON for posts without images
+        const postData = {
+          title: formData.title,
+          content: formData.content,
+          is_published: formData.status === 'published',
+          is_draft: formData.status === 'draft'
+        };
+
+        // Add category if selected
+        if (formData.category) {
+          const selectedCategory = categories.find(cat => cat.id === formData.category);
+          if (selectedCategory) {
+            postData.category = {
+              name: selectedCategory.name,
+              slug: selectedCategory.slug
+            };
+          }
+        }
+
+        // Add tags if selected
+        if (formData.tag.length > 0) {
+          const tagData = [];
+          for (const tagId of formData.tag) {
+            const selectedTag = tags.find(tag => tag.id === tagId);
+            if (selectedTag) {
+              tagData.push({
+                name: selectedTag.name,
+                slug: selectedTag.slug
+              });
+            }
+          }
+          if (tagData.length > 0) {
+            postData.tag = tagData;
+          }
+        }
+
+        console.log('Sending JSON data:', JSON.stringify(postData, null, 2));
+        response = await blogApi.createPost(postData);
       }
 
-      console.log('Sending post data:', JSON.stringify(postData, null, 2));
-
-      // For now, let's not handle image upload to simplify
-      // if (formData.image) {
-      //   // Handle image upload separately if needed
-      // }
-
-      const response = await blogApi.createPost(postData);
       setSuccess('Post created successfully!');
 
       // Reset form

@@ -7,7 +7,8 @@ const EditPost = ({ post, onPostUpdated, onCancel }) => {
     title: '',
     content: '',
     category: '',
-    tag: []
+    tag: [],
+    image: null
   });
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
@@ -20,7 +21,8 @@ const EditPost = ({ post, onPostUpdated, onCancel }) => {
         title: post.title || '',
         content: post.content || '',
         category: typeof post.category === 'object' && post.category ? post.category.id : post.category || '',
-        tag: Array.isArray(post.tag) ? post.tag.map(t => typeof t === 'object' ? t.id : t) : []
+        tag: Array.isArray(post.tag) ? post.tag.map(t => typeof t === 'object' ? t.id : t) : [],
+        image: null // Keep as null for new image uploads
       });
     }
   }, [post]);
@@ -44,11 +46,19 @@ const EditPost = ({ post, onPostUpdated, onCancel }) => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type, files } = e.target;
+
+    if (type === 'file') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: files[0]
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleTagChange = (e) => {
@@ -69,15 +79,78 @@ const EditPost = ({ post, onPostUpdated, onCancel }) => {
     setError('');
 
     try {
-      // Prepare data for API
-      const updateData = {
-        title: formData.title,
-        content: formData.content,
-        category: formData.category ? parseInt(formData.category) : null,
-        tag: formData.tag
-      };
+      let updatedPost;
 
-      const updatedPost = await blogApi.updatePost(post.slug, updateData);
+      // Check if we have a new image to upload
+      const hasNewImage = formData.image && formData.image instanceof File;
+
+      if (hasNewImage) {
+        // Use FormData for file upload
+        const formDataToSend = new FormData();
+        formDataToSend.append('title', formData.title);
+        formDataToSend.append('content', formData.content);
+        formDataToSend.append('image', formData.image);
+
+        if (formData.category) {
+          const selectedCategory = categories.find(cat => cat.id === parseInt(formData.category));
+          if (selectedCategory) {
+            formDataToSend.append('category', JSON.stringify({
+              name: selectedCategory.name,
+              slug: selectedCategory.slug
+            }));
+          }
+        }
+
+        if (formData.tag.length > 0) {
+          const tagData = [];
+          for (const tagId of formData.tag) {
+            const selectedTag = tags.find(tag => tag.id === tagId);
+            if (selectedTag) {
+              tagData.push({
+                name: selectedTag.name,
+                slug: selectedTag.slug
+              });
+            }
+          }
+          if (tagData.length > 0) {
+            formDataToSend.append('tag', JSON.stringify(tagData));
+          }
+        }
+
+        updatedPost = await blogApi.updatePost(post.slug, formDataToSend);
+      } else {
+        // Use regular JSON for updates without new images
+        const updateData = {
+          title: formData.title,
+          content: formData.content
+        };
+
+        if (formData.category) {
+          const selectedCategory = categories.find(cat => cat.id === parseInt(formData.category));
+          if (selectedCategory) {
+            updateData.category = {
+              name: selectedCategory.name,
+              slug: selectedCategory.slug
+            };
+          }
+        }
+
+        if (formData.tag.length > 0) {
+          const tagData = [];
+          for (const tagId of formData.tag) {
+            const selectedTag = tags.find(tag => tag.id === tagId);
+            if (selectedTag) {
+              tagData.push({
+                name: selectedTag.name,
+                slug: selectedTag.slug
+              });
+            }
+          }
+          updateData.tag = tagData;
+        }
+
+        updatedPost = await blogApi.updatePost(post.slug, updateData);
+      }
 
       if (onPostUpdated) {
         onPostUpdated(updatedPost);
@@ -146,6 +219,38 @@ const EditPost = ({ post, onPostUpdated, onCancel }) => {
             required
             disabled={loading}
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="image">Update Image:</label>
+          {post.image && (
+            <div className="current-image">
+              <p>Current image:</p>
+              <img
+                src={post.image}
+                alt="Current post image"
+                style={{ maxWidth: '200px', maxHeight: '150px', marginBottom: '10px' }}
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            id="image"
+            name="image"
+            onChange={handleChange}
+            accept="image/*"
+            disabled={loading}
+          />
+          {formData.image && (
+            <div className="image-preview">
+              <p>New image preview:</p>
+              <img
+                src={URL.createObjectURL(formData.image)}
+                alt="Preview"
+                style={{ maxWidth: '200px', maxHeight: '150px', marginTop: '10px' }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="form-group">

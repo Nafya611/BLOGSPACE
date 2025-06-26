@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Image Upload</title>
+</head>
+<body>
+    <h2>Test Image Upload to Blog API</h2>
+    <form id="uploadForm">
+        <div>
+            <label>Title:</label>
+            <input type="text" id="title" value="Test Post with Image" required>
+        </div>
+        <div>
+            <label>Content:</label>
+            <textarea id="content" required>This is a test post with an image</textarea>
+        </div>
+        <div>
+            <label>Image:</label>
+            <input type="file" id="image" accept="image/*">
+        </div>
+        <button type="submit">Create Post</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('content', document.getElementById('content').value);
+            formData.append('is_published', 'true');
+            formData.append('is_draft', 'false');
+
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            try {
+                const response = await fetch('http://localhost:8000/api/Post/create_post/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Token YOUR_TOKEN_HERE' // Replace with actual token
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML =
+                    '<h3>Result:</h3><pre>' + JSON.stringify(result, null, 2) + '</pre>';
+
+                if (response.ok) {
+                    console.log('Post created successfully:', result);
+                } else {
+                    console.error('Error creating post:', result);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                document.getElementById('result').innerHTML =
+                    '<h3>Error:</h3><p>' + error.message + '</p>';
+            }
+        });
+    </script>
+</body>
+</html>

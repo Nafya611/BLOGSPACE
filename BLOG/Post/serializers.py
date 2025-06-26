@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from Core.models import Post,Tag,Category,Comment
 from django.utils.text import slugify
+import json
+import json
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,7 +30,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = [ 'title', 'slug', 'content', 'tag', 'category', 'author','created_at', 'updated_at','is_published']
+        fields = [ 'title', 'slug', 'content', 'image', 'tag', 'category', 'author','created_at', 'updated_at','is_published']
         read_only_fields = [ 'author','slug', 'created_at', 'updated_at','is_published']
 
     def __init__(self, *args, **kwargs):
@@ -36,6 +38,27 @@ class PostSerializer(serializers.ModelSerializer):
         if self.partial:
             for field in self.fields.values():
                 field.required = False
+
+    def to_internal_value(self, data):
+        """Convert incoming data, handling JSON strings from FormData"""
+        # Make a mutable copy of the data
+        if hasattr(data, '_mutable'):
+            data._mutable = True
+
+        # Handle JSON strings for category and tag when sent via FormData
+        if 'category' in data and isinstance(data['category'], str):
+            try:
+                data['category'] = json.loads(data['category'])
+            except (json.JSONDecodeError, TypeError):
+                pass  # Keep as string if not valid JSON
+
+        if 'tag' in data and isinstance(data['tag'], str):
+            try:
+                data['tag'] = json.loads(data['tag'])
+            except (json.JSONDecodeError, TypeError):
+                pass  # Keep as string if not valid JSON
+
+        return super().to_internal_value(data)
 
     def _get_or_create_tags(self, tags, post):
         """Handle getting or creating tags"""
@@ -52,9 +75,20 @@ class PostSerializer(serializers.ModelSerializer):
         title = validated_data.get('title')
         slug = slugify(title)
 
-        # pop correct fields
-        tags = validated_data.pop('tag', [])  # corrected 'tag' not 'tags'
+        # Handle JSON strings from FormData
+        tags = validated_data.pop('tag', [])
+        if isinstance(tags, str):
+            try:
+                tags = json.loads(tags)
+            except json.JSONDecodeError:
+                tags = []
+
         categories = validated_data.pop('category', None)
+        if isinstance(categories, str):
+            try:
+                categories = json.loads(categories)
+            except json.JSONDecodeError:
+                categories = None
 
         # Ensure uniqueness of slug
         original_slug = slug
@@ -62,8 +96,6 @@ class PostSerializer(serializers.ModelSerializer):
         while Post.objects.filter(slug=slug).exists():
             slug = f"{original_slug}-{counter}"
             counter += 1
-
-
 
         # Create post
         post = Post.objects.create(
@@ -80,6 +112,5 @@ class PostSerializer(serializers.ModelSerializer):
 
         # handle tags
         self._get_or_create_tags(tags, post)
-
 
         return post
