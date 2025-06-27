@@ -4,7 +4,12 @@ Production settings for BLOG project on Render.
 
 from pathlib import Path
 import os
-import dj_database_url
+
+# Try to import dj_database_url, but don't fail if it's not available
+try:
+    import dj_database_url
+except ImportError:
+    dj_database_url = None
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -72,10 +77,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'BLOG.wsgi.application'
 
 # Database
-# Use dj_database_url to parse DATABASE_URL environment variable
-if os.environ.get('DATABASE_URL'):
+# Use dj_database_url to parse DATABASE_URL environment variable if available
+if os.environ.get('DATABASE_URL') and dj_database_url:
     DATABASES = {
         'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+    }
+elif os.environ.get('DATABASE_URL'):
+    # Manual parsing if dj_database_url is not available
+    import urllib.parse as urlparse
+    url = urlparse.urlparse(os.environ.get('DATABASE_URL'))
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': url.path[1:],
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port,
+        }
     }
 else:
     # Fallback to SQLite for local development

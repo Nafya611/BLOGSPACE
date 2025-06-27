@@ -11,10 +11,12 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-# Use production settings if RENDER environment variable is set
-if os.environ.get('RENDER'):
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings_production')
-else:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings')
+# Check if DJANGO_SETTINGS_MODULE is already set
+if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+    # Use production settings if RENDER environment variable is set
+    if os.environ.get('RENDER'):
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings_production'
+    else:
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings'
 
 application = get_wsgi_application()

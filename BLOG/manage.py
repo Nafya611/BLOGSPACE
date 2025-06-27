@@ -6,11 +6,13 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    # Use production settings if RENDER environment variable is set
-    if os.environ.get('RENDER'):
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings_production')
-    else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings')
+    # Check if DJANGO_SETTINGS_MODULE is already set
+    if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+        # Use production settings if RENDER environment variable is set
+        if os.environ.get('RENDER'):
+            os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings_production'
+        else:
+            os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings'
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
