@@ -34,8 +34,14 @@ RUN apk del build-base gcc musl-dev python3-dev libpq-dev
 # Add user
 RUN adduser --disabled-password --no-create-home django-user
 
+# Create media directory and set permissions
+RUN mkdir -p /app/media && chown django-user:django-user /app/media
+
 # Use the created non-root user
 USER django-user
 
 # Expose the app port
 EXPOSE 8000
+
+# Default command for production
+CMD ["python", "BLOG/manage.py", "runserver", "0.0.0.0:8000"]

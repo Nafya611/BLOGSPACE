@@ -1,0 +1,55 @@
+services:
+  # Backend API Service (Dockerized)
+  - type: web
+    name: blog-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: BLOG.settings_production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"  # Update with your actual domain
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blog-db
+          property: connectionString
+    startCommand: |
+      python BLOG/manage.py collectstatic --noinput &&
+      python BLOG/manage.py migrate &&
+      python BLOG/manage.py runserver 0.0.0.0:8000
+    healthCheckPath: /health/
+    autoDeploy: false
+
+  # Frontend Service (Static Site)
+  - type: web
+    name: blog-frontend
+    runtime: static
+    buildCommand: |
+      cd frontend &&
+      npm ci &&
+      npm run build
+    staticPublishPath: ./frontend/dist
+    plan: free
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: blog-api
+          property: host
+    routes:
+      - type: redirect
+        source: /*
+        destination: /index.html
+    autoDeploy: false
+
+databases:
+  - name: blog-db
+    databaseName: blog_db
+    user: blog_user
+    plan: free

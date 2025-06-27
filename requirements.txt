@@ -5,3 +5,6 @@ drf-spectacular>=0.27.0,<1.0
 Pillow>=9.0.0
 flake8>=4.0.0,<5.0
 django-cors-headers>=4.0.0
+dj-database-url>=2.0.0
+whitenoise>=6.0.0
+gunicorn>=21.0.0

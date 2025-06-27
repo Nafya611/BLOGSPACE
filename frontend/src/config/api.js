@@ -2,6 +2,11 @@
 // Access import.meta.env instead of process.env in Vite projects
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// Remove trailing slash if present
+const cleanedApiUrl = API_BASE_URL.replace(/\/$/, '');
+
+console.log('API Base URL:', cleanedApiUrl);
+
 export const API_ENDPOINTS = {
   // Authentication endpoints
   LOGIN: '/api/user/token/',
@@ -35,4 +40,4 @@ export const API_ENDPOINTS = {
   ADMIN_COMMENTS: '/api/Post/admin/comments',
 };
 
-export default API_BASE_URL;
+export default cleanedApiUrl;
