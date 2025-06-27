@@ -4,6 +4,7 @@ FROM python:3.11-alpine3.21
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/venv/bin:$PATH"
+ENV RENDER=1
 
 # Create working directory
 WORKDIR /app
@@ -28,6 +29,9 @@ RUN /venv/bin/pip install -r /tmp/requirements.txt
 # Copy your app source code
 COPY . /app
 
+# Make start script executable
+RUN chmod +x start.sh
+
 # Cleanup build dependencies to keep image small
 RUN apk del build-base gcc musl-dev python3-dev libpq-dev
 
@@ -44,4 +48,4 @@ USER django-user
 EXPOSE 8000
 
 # Default command for production
-CMD ["python", "BLOG/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["./start.sh"]
