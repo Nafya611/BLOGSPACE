@@ -1,51 +1,52 @@
-FROM python:3.11-alpine3.21
+FROM python:3.11-alpine
 
-# Prevent .pyc files and enable stdout/stderr
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/venv/bin:$PATH"
-ENV RENDER=1
+ENV RENDER=true
 
 # Create working directory
 WORKDIR /app
 
-# Install dependencies
+# Install system dependencies
 RUN apk update && \
     apk add --no-cache \
     postgresql-client \
-    libpq \
-    libpq-dev \
+    postgresql-dev \
     gcc \
     musl-dev \
-    python3-dev \
-    build-base \
-    && python -m venv /venv && \
-    /venv/bin/pip install --upgrade pip
+    linux-headers \
+    curl \
+    && python -m venv /venv
 
-# Copy requirements and install them
-COPY ./requirements.txt /tmp/requirements.txt
-RUN /venv/bin/pip install -r /tmp/requirements.txt
+# Upgrade pip
+RUN /venv/bin/pip install --upgrade pip
 
-# Copy your app source code
-COPY . /app
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN /venv/bin/pip install -r requirements.txt
 
-# Make start script executable
-RUN chmod +x start.sh
+# Copy project files
+COPY . .
 
-# Cleanup build dependencies to keep image small
-RUN apk del build-base gcc musl-dev python3-dev libpq-dev
+# Create necessary directories and set permissions
+RUN mkdir -p /app/media /app/BLOG/staticfiles && \
+    chmod +x start.sh
 
-# Add user
-RUN adduser --disabled-password --no-create-home django-user
+# Add non-root user
+RUN adduser --disabled-password --no-create-home django-user && \
+    chown -R django-user:django-user /app
 
-# Create media directory and set permissions
-RUN mkdir -p /app/media && chown django-user:django-user /app/media
-
-# Use the created non-root user
+# Switch to non-root user
 USER django-user
 
-# Expose the app port
+# Expose port
 EXPOSE 8000
 
-# Default command for production
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8000/health/ || exit 1
+
+# Start application
 CMD ["./start.sh"]

@@ -18,14 +18,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fs2f%q(a2l+l7npk*@-882m2mqu50i)=c_u=#*7zo2ty&uj6!d')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    '.onrender.com',  # Allow all Render subdomains
-]
+# Parse ALLOWED_HOSTS from environment variable
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0,.onrender.com')
+ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',')]
 
 # Application definition
 INSTALLED_APPS = [
@@ -76,26 +73,32 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BLOG.wsgi.application'
 
-# Database
-# Use dj_database_url to parse DATABASE_URL environment variable if available
-if os.environ.get('DATABASE_URL') and dj_database_url:
-    DATABASES = {
-        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
-    }
-elif os.environ.get('DATABASE_URL'):
-    # Manual parsing if dj_database_url is not available
-    import urllib.parse as urlparse
-    url = urlparse.urlparse(os.environ.get('DATABASE_URL'))
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': url.path[1:],
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port,
+# Database configuration
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    if dj_database_url:
+        # Use dj_database_url if available
+        DATABASES = {
+            'default': dj_database_url.parse(DATABASE_URL)
         }
-    }
+    else:
+        # Manual parsing for PostgreSQL
+        import urllib.parse as urlparse
+        url = urlparse.urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': url.path[1:] if url.path else '',
+                'USER': url.username or '',
+                'PASSWORD': url.password or '',
+                'HOST': url.hostname or 'localhost',
+                'PORT': url.port or 5432,
+                'OPTIONS': {
+                    'connect_timeout': 60,
+                },
+            }
+        }
 else:
     # Fallback to SQLite for local development
     DATABASES = {
