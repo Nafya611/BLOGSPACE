@@ -91,6 +91,20 @@ if DATABASE_URL:
         try:
             import urllib.parse as urlparse
             url = urlparse.urlparse(DATABASE_URL)
+
+            # Debug the parsed URL components
+            print(f"Debug - URL components: scheme={url.scheme}, hostname={url.hostname}, port={url.port}, path={url.path}")
+
+            # Extract port with proper fallback
+            port = url.port
+            if port is None:
+                port = 5432
+            elif isinstance(port, str):
+                try:
+                    port = int(port)
+                except ValueError:
+                    port = 5432
+
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.postgresql',
@@ -98,12 +112,13 @@ if DATABASE_URL:
                     'USER': url.username or '',
                     'PASSWORD': url.password or '',
                     'HOST': url.hostname or 'localhost',
-                    'PORT': url.port or 5432,
+                    'PORT': port,
                     'OPTIONS': {
                         'connect_timeout': 60,
                     },
                 }
             }
+            print(f"Database configured: {DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}")
         except Exception as parse_error:
             print(f"Error parsing DATABASE_URL: {parse_error}")
             # Final fallback to SQLite
