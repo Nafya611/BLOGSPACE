@@ -10,7 +10,8 @@ def main():
     if not os.environ.get('DJANGO_SETTINGS_MODULE'):
         # Use production settings if RENDER environment variable is set
         if os.environ.get('RENDER'):
-            os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings_production'
+            # Try simple settings first, fallback to production settings
+            os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings_simple'
         else:
             os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings'
     try:

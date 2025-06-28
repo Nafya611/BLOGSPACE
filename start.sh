@@ -11,12 +11,33 @@ cd BLOG
 # Simple database check - just try to connect without complex logic
 if [ "$DATABASE_URL" ]; then
     echo "Database URL detected, running migrations..."
+    echo "DATABASE_URL length: ${#DATABASE_URL}"
+    # Don't print the full URL for security, just show if it's set
+    echo "DATABASE_URL starts with: $(echo $DATABASE_URL | cut -c1-10)..."
 else
     echo "No DATABASE_URL found, using SQLite..."
 fi
 
 # Run migrations
 echo "Running migrations..."
+# Test Django settings first
+python -c "
+import os
+import django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings_simple' if os.environ.get('RENDER') else 'BLOG.settings')
+try:
+    django.setup()
+    from django.conf import settings
+    print('✅ Django settings loaded successfully')
+    print(f'Database engine: {settings.DATABASES[\"default\"][\"ENGINE\"]}')
+    if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+        print(f'Database name: {settings.DATABASES[\"default\"][\"NAME\"]}')
+        print(f'Database host: {settings.DATABASES[\"default\"][\"HOST\"]}')
+except Exception as e:
+    print(f'❌ Django settings error: {e}')
+    exit(1)
+"
+
 python manage.py migrate --noinput
 
 # Collect static files

@@ -1,15 +1,11 @@
 """
-Production settings for BLOG project on Render.
+Simple production settings for BLOG project on Render.
+This version doesn't use dj_database_url to avoid parsing issues.
 """
 
 from pathlib import Path
 import os
-
-# Try to import dj_database_url, but don't fail if it's not available
-try:
-    import dj_database_url
-except ImportError:
-    dj_database_url = None
+import urllib.parse as urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,7 +40,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files on Render
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,48 +69,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BLOG.wsgi.application'
 
-# Database configuration
+# Database configuration - Simple manual parsing
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    try:
-        if dj_database_url:
-            # Use dj_database_url if available and URL is valid
-            DATABASES = {
-                'default': dj_database_url.parse(DATABASE_URL)
-            }
-        else:
-            raise ValueError("dj_database_url not available")
-    except (ValueError, Exception) as e:
-        # Fallback to manual parsing if dj_database_url fails
-        print(f"Warning: dj_database_url failed ({e}), using manual parsing")
-        try:
-            import urllib.parse as urlparse
-            url = urlparse.urlparse(DATABASE_URL)
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': url.path[1:] if url.path else '',
-                    'USER': url.username or '',
-                    'PASSWORD': url.password or '',
-                    'HOST': url.hostname or 'localhost',
-                    'PORT': url.port or 5432,
-                    'OPTIONS': {
-                        'connect_timeout': 60,
-                    },
-                }
-            }
-        except Exception as parse_error:
-            print(f"Error parsing DATABASE_URL: {parse_error}")
-            # Final fallback to SQLite
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': BASE_DIR / 'db.sqlite3',
-                }
-            }
+    # Manual parsing for PostgreSQL
+    url = urlparse.urlparse(DATABASE_URL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': url.path[1:] if url.path else '',
+            'USER': url.username or '',
+            'PASSWORD': url.password or '',
+            'HOST': url.hostname or 'localhost',
+            'PORT': url.port or 5432,
+            'OPTIONS': {
+                'connect_timeout': 60,
+            },
+        }
+    }
 else:
-    # No DATABASE_URL provided, use SQLite for local development
+    # SQLite fallback
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -144,14 +119,12 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# Configure WhiteNoise for static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files configuration
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -172,7 +145,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# Spectacular settings for API documentation
+# Spectacular settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Blog API',
     'VERSION': '1.0.0',
@@ -192,7 +165,7 @@ SPECTACULAR_SETTINGS = {
     'SECURITY': [{'TokenAuth': []}],
 }
 
-# CORS settings for frontend integration
+# CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -200,14 +173,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# Add your frontend domain when deployed
+# Add frontend domain if provided
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 if FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
     CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Allow all origins during development only
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 
