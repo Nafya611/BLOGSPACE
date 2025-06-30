@@ -92,17 +92,36 @@ if DATABASE_URL:
             import urllib.parse as urlparse
             url = urlparse.urlparse(DATABASE_URL)
 
-            # Debug the parsed URL components
-            print(f"Debug - URL components: scheme={url.scheme}, hostname={url.hostname}, port={url.port}, path={url.path}")
+            # Debug the parsed URL components (avoid accessing url.port directly as it can cause the error)
+            print(f"Debug - URL components: scheme={url.scheme}, hostname={url.hostname}, path={url.path}")
+            print(f"Debug - Raw URL: {DATABASE_URL[:50]}...")  # Show first 50 chars for debugging
 
-            # Extract port with proper fallback
-            port = url.port
-            if port is None:
-                port = 5432
-            elif isinstance(port, str):
-                try:
+            # Extract port with more robust parsing
+            try:
+                # Try to get port directly first, but catch the ValueError
+                port = url.port
+                if port is None:
+                    port = 5432
+                elif isinstance(port, str):
                     port = int(port)
-                except ValueError:
+            except ValueError as port_error:
+                print(f"Port parsing error: {port_error}")
+                # Fallback: try to extract port from netloc manually
+                try:
+                    if ':' in url.netloc:
+                        # Split hostname:port
+                        netloc_parts = url.netloc.split(':')
+                        if len(netloc_parts) >= 2:
+                            port_str = netloc_parts[-1]  # Get last part after ':'
+                            # Remove any extra characters that might be there
+                            port_str = ''.join(filter(str.isdigit, port_str))
+                            port = int(port_str) if port_str else 5432
+                        else:
+                            port = 5432
+                    else:
+                        port = 5432
+                except (ValueError, IndexError):
+                    print("Manual port extraction failed, using default 5432")
                     port = 5432
 
             DATABASES = {
@@ -112,7 +131,7 @@ if DATABASE_URL:
                     'USER': url.username or '',
                     'PASSWORD': url.password or '',
                     'HOST': url.hostname or 'localhost',
-                    'PORT': port,
+                    'PORT': port if port is not None else 5432,
                     'OPTIONS': {
                         'connect_timeout': 60,
                     },

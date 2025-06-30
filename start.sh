@@ -24,7 +24,11 @@ echo "Running migrations..."
 python -c "
 import os
 import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings_simple' if os.environ.get('RENDER') else 'BLOG.settings')
+# Use production settings on Render, simple settings as fallback
+if os.environ.get('RENDER'):
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings_production')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BLOG.settings')
 try:
     django.setup()
     from django.conf import settings
@@ -33,9 +37,17 @@ try:
     if 'postgresql' in settings.DATABASES['default']['ENGINE']:
         print(f'Database name: {settings.DATABASES[\"default\"][\"NAME\"]}')
         print(f'Database host: {settings.DATABASES[\"default\"][\"HOST\"]}')
+        print(f'Database port: {settings.DATABASES[\"default\"][\"PORT\"]} (type: {type(settings.DATABASES[\"default\"][\"PORT\"])})')
 except Exception as e:
     print(f'❌ Django settings error: {e}')
-    exit(1)
+    print('Trying fallback to simple settings...')
+    try:
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'BLOG.settings_simple'
+        django.setup()
+        print('✅ Fallback settings loaded successfully')
+    except Exception as fallback_error:
+        print(f'❌ Fallback settings also failed: {fallback_error}')
+        exit(1)
 "
 
 python manage.py migrate --noinput
