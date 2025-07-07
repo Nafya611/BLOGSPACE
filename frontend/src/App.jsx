@@ -5,6 +5,7 @@ import WelcomePage from './components/WelcomePage';
 import BlogList from './components/BlogList';
 import AuthContainer from './components/AuthContainer';
 import Dashboard from './components/Dashboard';
+import GoogleCallback from './components/GoogleCallback';
 import { authApi } from './services/authApi';
 import './components/BlogList.css';
 import './components/Dashboard.css';
@@ -96,6 +97,10 @@ function AppContent() {
               <Navigate to="/dashboard" replace /> :
               <AuthContainer onAuthSuccess={handleAuthSuccess} />
             }
+          />
+          <Route
+            path="/accounts/google/login/callback/"
+            element={<GoogleCallback />}
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

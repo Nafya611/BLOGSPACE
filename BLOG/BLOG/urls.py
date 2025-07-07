@@ -35,11 +35,8 @@ urlpatterns = [
     path('api/Post/',include('Post.urls')),
     path('health/', views.health_check, name='health_check'),
     path('api/', views.api_info, name='api_info'),
+    path('accounts/', include('allauth.urls')),  # Allauth URLs for OAuth
 ]
 
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-else:
-    # Also serve media files in production for this setup
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve media files
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { authApi } from '../services/authApi';
+import GoogleLogin from './GoogleLogin';
 
 const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
   const [formData, setFormData] = useState({
@@ -86,6 +87,13 @@ const Login = ({ onLoginSuccess, onSwitchToSignup }) => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
+        <div className="social-login">
+          <div style={{ margin: '20px 0', textAlign: 'center' }}>
+            <p style={{ margin: '10px 0', color: '#666' }}>Or login with:</p>
+            <GoogleLogin />
+          </div>
+        </div>
 
         <div className="auth-switch">
           <p>

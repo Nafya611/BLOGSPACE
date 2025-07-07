@@ -4,7 +4,6 @@ FROM python:3.11-alpine
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/venv/bin:$PATH"
-ENV RENDER=true
 
 # Create working directory
 WORKDIR /app
