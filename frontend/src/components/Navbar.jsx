@@ -14,19 +14,18 @@ const Navbar = ({ user, onLogout }) => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <h1 onClick={() => navigate('/')}>Blog Platform</h1>
+          <h1 onClick={() => navigate(user ? '/blog' : '/login')}>Blog Platform</h1>
         </div>
 
         <div className="navbar-menu">
-          <button
-            onClick={() => navigate('/blog')}
-            className={`nav-link ${isActiveRoute('/blog') || isActiveRoute('/') ? 'active' : ''}`}
-          >
-            Blog
-          </button>
-
           {user ? (
             <>
+              <button
+                onClick={() => navigate('/blog')}
+                className={`nav-link ${isActiveRoute('/blog') || isActiveRoute('/') ? 'active' : ''}`}
+              >
+                Blog
+              </button>
               <button
                 onClick={() => navigate('/dashboard')}
                 className={`nav-link ${isActiveRoute('/dashboard') ? 'active' : ''}`}

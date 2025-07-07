@@ -178,6 +178,13 @@ const BlogList = ({ refreshTrigger }) => {
                         src={post.image}
                         alt={post.title || 'Post image'}
                         className="post-thumbnail"
+                        onError={(e) => {
+                          console.error('Failed to load image:', post.image);
+                          e.target.style.display = 'none';
+                        }}
+                        onLoad={() => {
+                          console.log('Image loaded successfully:', post.image);
+                        }}
                       />
                     </div>
                   )}

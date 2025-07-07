@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import WelcomePage from './components/WelcomePage';
 import BlogList from './components/BlogList';
 import AuthContainer from './components/AuthContainer';
 import Dashboard from './components/Dashboard';
@@ -66,8 +67,20 @@ function AppContent() {
 
       <main>
         <Routes>
-          <Route path="/" element={<BlogList />} />
-          <Route path="/blog" element={<BlogList />} />
+          <Route
+            path="/"
+            element={
+              user ? <BlogList /> : <WelcomePage />
+            }
+          />
+          <Route
+            path="/blog"
+            element={
+              <ProtectedRoute>
+                <BlogList />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={

@@ -33,6 +33,18 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [ 'title', 'slug', 'content', 'image', 'tag', 'category', 'author','created_at', 'updated_at','is_published']
         read_only_fields = [ 'author','slug', 'created_at', 'updated_at','is_published']
 
+    def to_representation(self, instance):
+        """Convert model instance to representation, ensuring absolute image URLs"""
+        data = super().to_representation(instance)
+
+        # Convert relative image URL to absolute URL
+        if data.get('image'):
+            request = self.context.get('request')
+            if request:
+                data['image'] = request.build_absolute_uri(data['image'])
+
+        return data
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.partial:
