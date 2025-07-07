@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import Navbar from './components/Navbar';
 import BlogList from './components/BlogList';
 import AuthContainer from './components/AuthContainer';
 import Dashboard from './components/Dashboard';
@@ -61,41 +62,7 @@ function AppContent() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Blog Frontend</h1>
-        <p>React frontend connected to Django REST API</p>
-
-        <nav className="nav-buttons">
-          <button
-            onClick={() => navigate('/blog')}
-            className="nav-button"
-          >
-            Blog
-          </button>
-
-          {user ? (
-            <>
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="nav-button"
-              >
-                Dashboard
-              </button>
-              <span className="user-greeting">Hello, {user.username}!</span>
-              <button onClick={handleLogout} className="nav-button logout">
-                Logout
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => navigate('/login')}
-              className="nav-button"
-            >
-              Login/Signup
-            </button>
-          )}
-        </nav>
-      </header>
+      <Navbar user={user} onLogout={handleLogout} />
 
       <main>
         <Routes>
