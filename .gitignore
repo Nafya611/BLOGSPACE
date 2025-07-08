@@ -195,4 +195,28 @@ frontend/*.local
 frontend/.cache/
 frontend/.parcel-cache/
 frontend/.npm
-frontend/.eslintcache
+frontend/.eslintcache/
+
+# Docker and Database
+blog-db-data/
+*/blog-db-data/
+
+# Media files (uploaded images, etc.)
+BLOG/media/
+*/media/
+media/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.svg
+
+# Docker volumes and data
+*.pid
+*.log
+pg_*/
+postgres*/
+postmaster*

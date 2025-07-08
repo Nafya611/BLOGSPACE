@@ -1,16 +1,14 @@
 from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
 from rest_framework.decorators import api_view,renderer_classes,permission_classes,authentication_classes
 from rest_framework import status
 from rest_framework.response import Response
 from user.serializers import UserSerializer,AuthTokenSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
-from rest_framework.authtoken.models import Token
 from rest_framework.settings import api_settings
+from django.contrib.auth import authenticate
 
 
 # Create your views here.
@@ -38,11 +36,14 @@ def signup(request):
 @api_view(['POST'])
 @renderer_classes(api_settings.DEFAULT_RENDERER_CLASSES)
 def create_token(request):
-    serializer = AuthTokenSerializer(data=request.data,context={'requst':request})
+    serializer = AuthTokenSerializer(data=request.data,context={'request':request})
     if serializer.is_valid():
         user=serializer.validated_data['user']
-        token,created= Token.objects.get_or_create(user=user)
-        return Response({'token':token.key})
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -54,7 +55,7 @@ def create_token(request):
 
 )
 @api_view(['GET','PUT'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def manage_user(request):
 
@@ -73,14 +74,19 @@ def manage_user(request):
 
 @extend_schema(
     methods=["DELETE"],
-    description="Logs out the current user by deleting their auth token.",
+    description="Logs out the current user by adding their JWT token to blacklist.",
     responses={204: None}
 )
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def logout_user(request):
-    request.user.auth_token.delete()
-    return Response({'detail':"successfully logged out"},status=status.HTTP_204_NO_CONTENT)
+    try:
+        refresh_token = request.data["refresh"]
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        return Response({'detail':"successfully logged out"},status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'detail':"Invalid token"},status=status.HTTP_400_BAD_REQUEST)
 
 
 

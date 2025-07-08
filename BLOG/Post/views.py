@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from Post.serializers import PostSerializer,TagSerializer,CategorySerializer,CommentSerializer
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
-from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.response import Response
 from rest_framework import response
@@ -24,7 +24,7 @@ from django.shortcuts import get_object_or_404
 
 )
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def create_post(request):
 
@@ -42,7 +42,7 @@ def create_post(request):
     responses={200: PostSerializer(many=True)}
 )
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def blog_list(request):
     paginator = PageNumberPagination()
@@ -60,7 +60,7 @@ def blog_list(request):
     responses=PostSerializer
 )
 @api_view(['GET','PUT','PATCH','DELETE'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def blog_detail(request, slug):
     post = get_object_or_404(Post, author=request.user, slug=slug)
@@ -91,7 +91,7 @@ def blog_detail(request, slug):
 # Tag
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def tag_list(request):
     tag=Tag.objects.all().order_by("name")
@@ -99,7 +99,7 @@ def tag_list(request):
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_tag_slug(request,slug):
     tag=Tag.objects.filter(user=request.user,slug=slug)
@@ -107,7 +107,7 @@ def get_tag_slug(request,slug):
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_Post_tag_slug(request,slug):
     tag=get_object_or_404(Tag,slug=slug)
@@ -119,7 +119,7 @@ def get_Post_tag_slug(request,slug):
 
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def category_list(request):
     category = Category.objects.all().order_by('name')
@@ -127,7 +127,7 @@ def category_list(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_category_slug(request, slug):
     category = Category.objects.filter(user=request.user, slug=slug)
@@ -135,7 +135,7 @@ def get_category_slug(request, slug):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_Post_category_slug(request,slug):
     category=get_object_or_404(Category,slug=slug)
@@ -155,7 +155,7 @@ def get_Post_category_slug(request,slug):
 
 )
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def read_comments(request,slug):
     try:
@@ -180,7 +180,7 @@ def read_comments(request,slug):
 
 )
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def send_comment(request,slug):
     try:
@@ -204,6 +204,7 @@ def send_comment(request,slug):
     responses={200: PostSerializer(many=True)}
 )
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def admin_posts(request):
 
@@ -219,6 +220,7 @@ def admin_posts(request):
 
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def admin_post(request,slug):
     post=Post.objects.get(slug=slug)
@@ -226,6 +228,7 @@ def admin_post(request,slug):
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def publish_post(request,slug):
     post=Post.objects.get(slug=slug)
@@ -244,6 +247,7 @@ def publish_post(request,slug):
 )
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def admin_comments(request):
     paginator=PageNumberPagination()
@@ -256,6 +260,7 @@ def admin_comments(request):
 
 
 @api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def approve_comment(request,pk):
     comment=Comment.objects.get(pk=pk)
@@ -267,6 +272,7 @@ def approve_comment(request,pk):
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def delete_comment(request,pk):
     comment=Comment.objects.get(pk=pk)

@@ -11,25 +11,30 @@ services:
 
     volumes:
       - ./BLOG:/app
-    command: sh -c "python manage.py migrate &&
-                    python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py wait_for_db && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     environment:
       DB_HOST: db
-      DB_NAME: BLOGdb
-      DB_USER: postgres
-      DB_PASS: Entrance620
+      DB_NAME: blogdb
+      DB_USER: bloguser
+      DB_PASS: blogpass123
       DB_PORT: 5432
+      # Google OAuth Configuration
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
+      GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI}
     depends_on:
       - db
+    env_file:
+      - .env
 
   db:
     image: postgres:17-alpine
     volumes:
       - ./blog-db-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: BLOGdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Entrance620
+      POSTGRES_DB: blogdb
+      POSTGRES_USER: bloguser
+      POSTGRES_PASSWORD: blogpass123
 
 volumes:
   blog-db-data:

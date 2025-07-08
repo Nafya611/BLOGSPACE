@@ -4,7 +4,7 @@ from  BLOG import settings
 
 # Create your models here
 
-class UserManger(BaseUserManager):
+class UserManager(BaseUserManager):
     def create_user(self,email,password=None,**extra_field):
         if not email:
             raise ValueError('user must have email address')
@@ -38,7 +38,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     last_login = models.DateTimeField(auto_now=True)
     date_joined = models.DateTimeField(auto_now_add=True)
 
-    objects = UserManger()
+    objects = UserManager()
 
     USERNAME_FIELD= 'email'
     REQUIRED_FIELDS =[]
