@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import signup,create_token,manage_user,logout_user
-from .google_auth import google_auth, google_oauth_config, google_login_simple
+from .google_auth import google_auth, google_oauth_config, google_login_simple, google_oauth_callback
+from .google_test import google_oauth_test, google_oauth_callback_test
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns=[
@@ -10,8 +11,13 @@ urlpatterns=[
     path('me',manage_user,name='me'),
     path('logout/',logout_user,name='logut'),
 
-    # Google OAuth endpoints
+    # Google OAuth endpoints (main)
     path('google-auth/', google_auth, name='google_auth'),
     path('google-config/', google_oauth_config, name='google_oauth_config'),
     path('google-login/', google_login_simple, name='google_login_simple'),
+    path('google-callback/', google_oauth_callback, name='google_oauth_callback'),
+
+    # Test endpoints (keep for debugging)
+    path('google-test/', google_oauth_test, name='google_oauth_test'),
+    path('google-callback-test/', google_oauth_callback_test, name='google_oauth_callback_test'),
 ]

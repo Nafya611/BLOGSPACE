@@ -6,6 +6,8 @@ import requests
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
+from django.http import JsonResponse, HttpResponseRedirect
+import urllib.parse
 
 User = get_user_model()
 
@@ -79,9 +81,82 @@ def google_oauth_config(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def google_login_simple(request):
-    """Simple Google login flow - redirects to OAuth"""
+    """Generate Google OAuth URL for frontend"""
+    # Google OAuth parameters
+    oauth_params = {
+        'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+        'redirect_uri': settings.GOOGLE_OAUTH_REDIRECT_URI,
+        'scope': 'email profile',
+        'response_type': 'code',
+        'access_type': 'offline',
+        'include_granted_scopes': 'true'
+    }
+
+    # Create OAuth URL
+    oauth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urllib.parse.urlencode(oauth_params)}"
+
     return Response({
-        'message': 'Use the google-config endpoint to get OAuth configuration',
-        'google_config_url': '/api/user/google-config/',
-        'google_auth_url': '/api/user/google-auth/'
+        'oauth_url': oauth_url,
+        'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+        'redirect_uri': settings.GOOGLE_OAUTH_REDIRECT_URI,
+        'message': 'Visit the oauth_url to authenticate with Google'
     })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def google_oauth_callback(request):
+    """Handle the OAuth callback - same as the test that worked"""
+    code = request.GET.get('code')
+    error = request.GET.get('error')
+
+    if error:
+        # Redirect to frontend with error
+        return HttpResponseRedirect(f'http://localhost:5173/auth/callback?error={error}')
+
+    if not code:
+        return HttpResponseRedirect('http://localhost:5173/auth/callback?error=no_code')
+
+    try:
+        # Exchange code for access token
+        token_url = 'https://oauth2.googleapis.com/token'
+        token_data = {
+            'client_id': settings.GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH_CLIENT_SECRET,
+            'code': code,
+            'grant_type': 'authorization_code',
+            'redirect_uri': settings.GOOGLE_OAUTH_REDIRECT_URI,
+        }
+
+        token_response = requests.post(token_url, data=token_data)
+        token_json = token_response.json()
+
+        if 'access_token' not in token_json:
+            return HttpResponseRedirect('http://localhost:5173/auth/callback?error=token_exchange_failed')
+
+        # Get user info from Google
+        access_token = token_json['access_token']
+        user_info_url = f'https://www.googleapis.com/oauth2/v1/userinfo?access_token={access_token}'
+        user_response = requests.get(user_info_url)
+        user_data = user_response.json()
+
+        # Create or get user
+        user, created = User.objects.get_or_create(
+            email=user_data['email'],
+            defaults={
+                'username': user_data['email'],
+                'first_name': user_data.get('given_name', ''),
+                'last_name': user_data.get('family_name', ''),
+            }
+        )
+
+        # Create JWT tokens
+        refresh = RefreshToken.for_user(user)
+        access_token_jwt = str(refresh.access_token)
+        refresh_token_jwt = str(refresh)
+
+        # Redirect to frontend with tokens
+        redirect_url = f'http://localhost:5173/auth/callback?access_token={access_token_jwt}&refresh_token={refresh_token_jwt}&user_id={user.id}&email={user.email}'
+        return HttpResponseRedirect(redirect_url)
+
+    except Exception as e:
+        return HttpResponseRedirect(f'http://localhost:5173/auth/callback?error={str(e)}')

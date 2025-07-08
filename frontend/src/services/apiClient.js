@@ -16,8 +16,8 @@ apiClient.interceptors.request.use(
     // Add authentication token if available
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Django TokenAuthentication expects 'Token <token>' format
-      config.headers.Authorization = `Token ${token}`;
+      // JWT authentication expects 'Bearer <token>' format
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     // If data is FormData, remove Content-Type header to let browser set it

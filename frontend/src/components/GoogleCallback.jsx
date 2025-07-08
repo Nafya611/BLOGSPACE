@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 
 const GoogleCallback = () => {
   const [loading, setLoading] = useState(true);
@@ -11,29 +10,37 @@ const GoogleCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get the authorization code from the URL
+        // Get parameters from URL
         const params = new URLSearchParams(location.search);
-        const code = params.get('code');
+        const access_token = params.get('access_token');
+        const refresh_token = params.get('refresh_token');
+        const user_id = params.get('user_id');
+        const email = params.get('email');
+        const error_param = params.get('error');
 
-        if (!code) {
-          setError('No authorization code found');
+        if (error_param) {
+          setError(`Google OAuth error: ${error_param}`);
           setLoading(false);
           return;
         }
 
-        // Exchange the code for tokens
-        const response = await axios.post('/api/user/google-auth/', { code });
+        if (!access_token || !refresh_token) {
+          setError('Missing authentication tokens');
+          setLoading(false);
+          return;
+        }
 
         // Save tokens to localStorage
-        localStorage.setItem('accessToken', response.data.access_token);
-        localStorage.setItem('refreshToken', response.data.refresh_token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('authToken', access_token);
+        localStorage.setItem('refreshToken', refresh_token);
+        localStorage.setItem('user', JSON.stringify({ id: user_id, email: email }));
 
         // Redirect to dashboard
         navigate('/dashboard');
+
       } catch (error) {
         console.error('Google OAuth error:', error);
-        setError(error.response?.data?.error || 'Authentication failed');
+        setError('Authentication failed');
         setLoading(false);
       }
     };

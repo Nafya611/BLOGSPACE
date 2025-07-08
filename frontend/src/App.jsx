@@ -102,6 +102,10 @@ function AppContent() {
             path="/accounts/google/login/callback/"
             element={<GoogleCallback />}
           />
+          <Route
+            path="/auth/callback"
+            element={<GoogleCallback />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

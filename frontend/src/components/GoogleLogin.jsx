@@ -1,30 +1,52 @@
 import React from 'react';
-import axios from 'axios';
+import apiClient from '../services/apiClient';
 
 const GoogleLogin = () => {
   const handleGoogleLogin = async () => {
     try {
-      // Get the Google OAuth configuration from the backend
-      const configResponse = await axios.get('/api/user/google-config/');
-      const { client_id, redirect_uri } = configResponse.data;
+      console.log('Starting Google OAuth...');
+      console.log('apiClient baseURL:', apiClient.defaults.baseURL);
 
-      // Construct the Google OAuth URL
-      const googleAuthUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-      googleAuthUrl.searchParams.append('client_id', client_id);
-      googleAuthUrl.searchParams.append('redirect_uri', redirect_uri);
-      googleAuthUrl.searchParams.append('response_type', 'code');
-      googleAuthUrl.searchParams.append('scope', 'profile email');
+      // Get the Google OAuth URL from the backend (updated endpoint)
+      console.log('Making request to:', '/api/user/google-login/');
+      const response = await apiClient.get('/api/user/google-login/');
+      console.log('OAuth response:', response.data);
+      console.log('Full response:', response);
 
-      // Redirect to Google OAuth
-      window.location.href = googleAuthUrl.toString();
+      const { oauth_url } = response.data;
+
+      if (!oauth_url) {
+        console.error('No OAuth URL received from backend');
+        return;
+      }
+
+      console.log('Redirecting to:', oauth_url);
+
+      // Use a more reliable redirect method
+      // Instead of window.location.href, use window.open or a direct redirect
+      setTimeout(() => {
+        window.location.replace(oauth_url);
+      }, 100);
+
     } catch (error) {
-      console.error('Error getting Google OAuth configuration:', error);
+      console.error('Error getting Google OAuth URL:', error);
+      console.error('Error details:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
+
+      // Show a user-friendly error message
+      alert(`Failed to start Google OAuth: ${error.message}`);
     }
   };
 
   return (
     <button
-      onClick={handleGoogleLogin}
+      onClick={(e) => {
+        console.log('Button clicked!');
+        e.preventDefault();
+        e.stopPropagation();
+        handleGoogleLogin();
+      }}
       className="google-login-button"
       style={{
         backgroundColor: '#4285F4',
