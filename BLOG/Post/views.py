@@ -50,7 +50,7 @@ def blog_list(request):
 
     posts = Post.objects.filter(author=request.user).order_by("title")
     result_page = paginator.paginate_queryset(posts, request)
-    serializer = PostSerializer(result_page, many=True)
+    serializer = PostSerializer(result_page, many=True, context={'request': request})
 
     return paginator.get_paginated_response(serializer.data)
 
@@ -66,18 +66,18 @@ def blog_detail(request, slug):
     post = get_object_or_404(Post, author=request.user, slug=slug)
 
     if request.method == 'GET':
-        serializer = PostSerializer(post)
+        serializer = PostSerializer(post, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
-        serializer = PostSerializer(instance=post, data=request.data)
+        serializer = PostSerializer(instance=post, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PATCH':
-        serializer=PostSerializer(instance=post, data=request.data, partial=True)
+        serializer=PostSerializer(instance=post, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
@@ -112,7 +112,7 @@ def get_tag_slug(request,slug):
 def get_Post_tag_slug(request,slug):
     tag=get_object_or_404(Tag,slug=slug)
     post=Post.objects.filter(author=request.user,tag__in=[tag.id])
-    serializer=PostSerializer(post,many=True)
+    serializer=PostSerializer(post,many=True,context={'request': request})
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 ## category
@@ -140,7 +140,7 @@ def get_category_slug(request, slug):
 def get_Post_category_slug(request,slug):
     category=get_object_or_404(Category,slug=slug)
     post=Post.objects.get(author=request.user,category=category)
-    serializer=PostSerializer(post)
+    serializer=PostSerializer(post,context={'request': request})
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 #comment
@@ -213,7 +213,7 @@ def admin_posts(request):
 
      posts = Post.objects.all().order_by("title")
      result_page = paginator.paginate_queryset(posts, request)
-     serializer = PostSerializer(result_page, many=True)
+     serializer = PostSerializer(result_page, many=True, context={'request': request})
 
      return paginator.get_paginated_response(serializer.data)
 
@@ -224,7 +224,7 @@ def admin_posts(request):
 @permission_classes([IsAdminUser])
 def admin_post(request,slug):
     post=Post.objects.get(slug=slug)
-    serializer=PostSerializer(post)
+    serializer=PostSerializer(post,context={'request': request})
     return Response(serializer.data,status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
@@ -233,7 +233,7 @@ def admin_post(request,slug):
 def publish_post(request,slug):
     post=Post.objects.get(slug=slug)
     post.is_published=True
-    serializer=PostSerializer(post,data=request.data,partial=True)
+    serializer=PostSerializer(post,data=request.data,partial=True,context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data,status=status.HTTP_200_OK)
