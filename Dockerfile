@@ -10,30 +10,25 @@ RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     curl \
+    bash \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install gunicorn for production
-RUN pip install gunicorn
 
 # Copy project files
 COPY . .
 
+# Copy and set permissions for startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create necessary directories
 RUN mkdir -p /app/media /app/BLOG/staticfiles
 
-# Set Django project directory as working directory
-WORKDIR /app/BLOG
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
-
-# Create a startup script
-RUN echo '#!/bin/bash\ncd /app/BLOG\npython manage.py migrate --noinput\npython manage.py collectstatic --noinput\nexec gunicorn BLOG.wsgi:application --bind 0.0.0.0:$PORT' > /app/start.sh && \
-    chmod +x /app/start.sh
+# Set environment variable for Django settings
+ENV DJANGO_SETTINGS_MODULE=BLOG.settings
 
 # Expose port
 EXPOSE 8000
