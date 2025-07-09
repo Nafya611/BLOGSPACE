@@ -288,6 +288,10 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# Production settings override
+if os.environ.get('RENDER'):
+    from .settings_production import *
+
 
 
 

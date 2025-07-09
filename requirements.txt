@@ -10,3 +10,7 @@ requests>=2.28.0
 cryptography>=3.4.8
 djangorestframework-simplejwt>=5.3.0
 PyJWT>=2.8.0
+gunicorn>=21.0.0
+python-dotenv>=1.0.0
+dj-database-url>=2.0.0
+whitenoise>=6.5.0

@@ -1,44 +1,39 @@
-FROM python:3.11-alpine
+FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PATH="/venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Create working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apk update && \
-    apk add --no-cache \
-    postgresql-client \
-    postgresql-dev \
+RUN apt-get update && apt-get install -y \
     gcc \
-    musl-dev \
-    linux-headers \
+    libpq-dev \
     curl \
-    && python -m venv /venv
+    && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip
-RUN /venv/bin/pip install --upgrade pip
-
-# Copy requirements and install Python dependencies
+# Copy requirements first for better caching
 COPY requirements.txt .
-RUN /venv/bin/pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install gunicorn for production
+RUN pip install gunicorn
 
 # Copy project files
 COPY . .
 
-# Create necessary directories and set permissions
-RUN mkdir -p /app/media /app/BLOG/staticfiles && \
-    chmod +x start.sh
+# Create necessary directories
+RUN mkdir -p /app/media /app/BLOG/staticfiles
 
-# Add non-root user
-RUN adduser --disabled-password --no-create-home django-user && \
-    chown -R django-user:django-user /app
+# Set Django project directory as working directory
+WORKDIR /app/BLOG
 
-# Switch to non-root user
-USER django-user
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
+# Create a startup script
+RUN echo '#!/bin/bash\ncd /app/BLOG\npython manage.py migrate --noinput\npython manage.py collectstatic --noinput\nexec gunicorn BLOG.wsgi:application --bind 0.0.0.0:$PORT' > /app/start.sh && \
+    chmod +x /app/start.sh
 
 # Expose port
 EXPOSE 8000
@@ -48,4 +43,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8000/health/ || exit 1
 
 # Start application
-CMD ["./start.sh"]
+CMD ["/app/start.sh"]

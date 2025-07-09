@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: blog-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: RENDER
+        value: "true"
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: "blog-backend.onrender.com,localhost,127.0.0.1"
+      - key: DJANGO_SETTINGS_MODULE
+        value: "BLOG.settings"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blog-db
+          property: connectionString
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        value: "864269412451-4390ku2s94fpgonstlq95q5msgd9lmi5.apps.googleusercontent.com"
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        value: "https://blog-backend.onrender.com/api/user/google-callback/"
+      - key: PORT
+        value: "8000"
+
+databases:
+  - name: blog-db
+    plan: free
