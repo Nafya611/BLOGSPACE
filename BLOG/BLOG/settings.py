@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-fs2f%q(a2l+l7npk*@-882m2mqu50i)=c_u=#*7zo2ty&uj6!d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','https://blogspace-vuer.onrender.com']
 
 
 # Application definition
@@ -230,6 +230,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:8000",  # Backend Django server
     "http://127.0.0.1:8000",
+    "https://blogspace-vuer.onrender.com",  # Production URL
 ]
 
 CORS_ALLOW_CREDENTIALS = True
