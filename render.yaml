@@ -15,7 +15,7 @@ services:
       - key: FALLBACK_SECRET_KEY
         value: "django-insecure-fallback-key-for-development-only-change-in-production"
       - key: ALLOWED_HOSTS
-        value: "blog-backend.onrender.com,localhost,127.0.0.1"
+        value: "blogspace-vuer.onrender.com,localhost,127.0.0.1"
       - key: DJANGO_SETTINGS_MODULE
         value: "BLOG.settings"
       - key: DATABASE_URL

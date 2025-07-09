@@ -35,6 +35,7 @@ urlpatterns = [
     path('api/Post/',include('Post.urls')),
     path('health/', views.health_check, name='health_check'),
     path('api/', views.api_info, name='api_info'),
+    path('', views.api_info, name='root'),  # Add root URL handler
     path('accounts/', include('allauth.urls')),  # Allauth URLs for OAuth
 ]
 
