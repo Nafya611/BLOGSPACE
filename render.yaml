@@ -43,7 +43,9 @@ services:
       - key: GOOGLE_OAUTH_CLIENT_SECRET
         value: ""  # Set this in Render dashboard
       - key: GOOGLE_OAUTH_REDIRECT_URI
-        value: "https://blog-backend.onrender.com/api/user/google-callback/"
+        value: "https://blogspace-vuer.onrender.com/api/user/google-callback/"
+      - key: ALLOW_ALL_ORIGINS
+        value: "true"
       - key: PORT
         value: "8000"
 

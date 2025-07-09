@@ -277,15 +277,15 @@ SPECTACULAR_SETTINGS = {
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "https://your-frontend.vercel.app",  # Replace with your actual Vercel URL
+    "https://your-frontend.vercel.app",  # Replace with your actual Vercel URL after deployment
     "http://localhost:3000",
     "http://localhost:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Allow all origins during development
-if DEBUG:
+# Allow all origins during development and initial deployment
+if DEBUG or os.environ.get('ALLOW_ALL_ORIGINS', 'false').lower() == 'true':
     CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_HEADERS = [

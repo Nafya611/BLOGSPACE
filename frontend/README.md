@@ -2,11 +2,32 @@
 
 This is a React frontend application built with Vite that connects to the Django REST API backend.
 
+## Features
+
+- User authentication with Google OAuth
+- Create, read, update, and delete blog posts
+- Image upload for posts
+- Responsive design
+- JWT token-based authentication
+
 ## Prerequisites
 
 - Node.js (v16 or higher)
 - npm or yarn
-- Django backend server running on `http://localhost:8000`
+- Django backend server (deployed at https://blogspace-vuer.onrender.com)
+
+## Environment Variables
+
+Create a `.env` file in the root directory with:
+
+```env
+VITE_API_URL=https://blogspace-vuer.onrender.com
+```
+
+For local development, use:
+```env
+VITE_API_URL=http://localhost:8000
+```
 
 ## Installation
 
