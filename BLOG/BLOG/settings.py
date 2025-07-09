@@ -239,7 +239,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:8000",  # Backend Django server
     "http://127.0.0.1:8000",
-    "https://blogspace-vuer.onrender.com",  # Production URL
+    "https://blogspace-iota.vercel.app"
+
+     # Production URL
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -297,10 +299,6 @@ SOCIALACCOUNT_PROVIDERS = {
         'FETCH_USERINFO': True,
     }
 }
-
-# Production settings override
-if os.environ.get('RENDER'):
-    from .settings_production import *
 
 
 
