@@ -133,6 +133,7 @@ if DATABASE_URL and DATABASE_URL.strip():
                     'PORT': os.environ.get('DB_PORT', '5432'),
                 }
             }
+            print(f"Using fallback database config with HOST: {os.environ.get('DB_HOST', 'localhost')}")
 else:
     print("DATABASE_URL is empty, constructing from individual components...")
     # Try to construct DATABASE_URL from individual components
@@ -143,7 +144,9 @@ else:
         db_host = os.environ.get('DB_HOST', 'localhost')
         db_port = os.environ.get('DB_PORT', '5432')
 
-        if db_password != 'blogpass123':  # Only if we have real database credentials
+        print(f"Database components: HOST={db_host}, PORT={db_port}, DB={db_name}, USER={db_user}")
+
+        if db_password != 'blogpass123' or db_host != 'localhost':  # Only if we have real database credentials
             constructed_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
             print(f"Constructed DATABASE_URL: postgresql://{db_user}:***@{db_host}:{db_port}/{db_name}")
 
@@ -152,7 +155,18 @@ else:
             }
             print("Successfully constructed and parsed DATABASE_URL from components")
         else:
-            raise Exception("Using fallback configuration")
+            print("Using fallback database configuration due to default credentials")
+            # Final fallback database configuration
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': db_name,
+                    'USER': db_user,
+                    'PASSWORD': db_password,
+                    'HOST': db_host,
+                    'PORT': db_port,
+                }
+            }
     except Exception as e:
         print(f"Error constructing DATABASE_URL: {e}")
         # Final fallback database configuration
@@ -166,6 +180,7 @@ else:
                 'PORT': os.environ.get('DB_PORT', '5432'),
             }
         }
+        print(f"Using final fallback database config with HOST: {os.environ.get('DB_HOST', 'localhost')}")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
