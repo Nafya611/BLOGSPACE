@@ -9,7 +9,14 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY') or os.environ.get('FALLBACK_SECRET_KEY')
+
+# Debug: Check SECRET_KEY
+print(f"SECRET_KEY exists: {bool(SECRET_KEY)}")
+if not SECRET_KEY:
+    print("WARNING: SECRET_KEY is empty! Using hardcoded fallback key.")
+    # Hardcoded fallback SECRET_KEY for development/testing (should be set properly in production)
+    SECRET_KEY = 'django-insecure-fallback-key-for-development-only-change-in-production'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
@@ -105,10 +112,10 @@ if DATABASE_URL and DATABASE_URL.strip():
             db_password = os.environ.get('POSTGRES_PASSWORD', 'blogpass123')
             db_host = os.environ.get('DB_HOST', 'localhost')
             db_port = os.environ.get('DB_PORT', '5432')
-            
+
             constructed_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
             print(f"Constructed DATABASE_URL: postgresql://{db_user}:***@{db_host}:{db_port}/{db_name}")
-            
+
             DATABASES = {
                 'default': dj_database_url.parse(constructed_url)
             }
@@ -135,11 +142,11 @@ else:
         db_password = os.environ.get('POSTGRES_PASSWORD', 'blogpass123')
         db_host = os.environ.get('DB_HOST', 'localhost')
         db_port = os.environ.get('DB_PORT', '5432')
-        
+
         if db_password != 'blogpass123':  # Only if we have real database credentials
             constructed_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
             print(f"Constructed DATABASE_URL: postgresql://{db_user}:***@{db_host}:{db_port}/{db_name}")
-            
+
             DATABASES = {
                 'default': dj_database_url.parse(constructed_url)
             }
