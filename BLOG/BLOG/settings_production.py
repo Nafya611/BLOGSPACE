@@ -73,10 +73,92 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'BLOG.wsgi.application'
 
-# Database - Use DATABASE_URL from environment
-DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
-}
+# Database - Use DATABASE_URL from environment with robust error handling
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
+
+# Debug: Print DATABASE_URL for troubleshooting (remove in production)
+print(f"DATABASE_URL value: {repr(DATABASE_URL[:50])}..." if DATABASE_URL else "DATABASE_URL is empty")
+
+# Clean up DATABASE_URL - remove any potential byte string artifacts
+if DATABASE_URL:
+    # Remove any potential b' prefix and trailing quotes
+    DATABASE_URL = DATABASE_URL.strip("b'\"")
+    DATABASE_URL = DATABASE_URL.replace("b'", "").replace("'", "")
+    print(f"Cleaned DATABASE_URL: {repr(DATABASE_URL[:50])}...")
+
+if DATABASE_URL and DATABASE_URL.strip():
+    try:
+        # Parse the database URL
+        db_config = dj_database_url.parse(DATABASE_URL)
+        DATABASES = {
+            'default': db_config
+        }
+        print("Successfully parsed DATABASE_URL")
+    except Exception as e:
+        print(f"Error parsing DATABASE_URL: {e}")
+        print(f"DATABASE_URL contents: {repr(DATABASE_URL)}")
+        # Try to construct DATABASE_URL manually from individual components
+        print("Attempting to construct DATABASE_URL from individual components...")
+        try:
+            db_name = os.environ.get('POSTGRES_DB', 'blogdb')
+            db_user = os.environ.get('POSTGRES_USER', 'bloguser')
+            db_password = os.environ.get('POSTGRES_PASSWORD', 'blogpass123')
+            db_host = os.environ.get('DB_HOST', 'localhost')
+            db_port = os.environ.get('DB_PORT', '5432')
+            
+            constructed_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+            print(f"Constructed DATABASE_URL: postgresql://{db_user}:***@{db_host}:{db_port}/{db_name}")
+            
+            DATABASES = {
+                'default': dj_database_url.parse(constructed_url)
+            }
+            print("Successfully constructed and parsed DATABASE_URL from components")
+        except Exception as e2:
+            print(f"Error constructing DATABASE_URL: {e2}")
+            # Final fallback database configuration
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.postgresql',
+                    'NAME': os.environ.get('POSTGRES_DB', 'blogdb'),
+                    'USER': os.environ.get('POSTGRES_USER', 'bloguser'),
+                    'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'blogpass123'),
+                    'HOST': os.environ.get('DB_HOST', 'localhost'),
+                    'PORT': os.environ.get('DB_PORT', '5432'),
+                }
+            }
+else:
+    print("DATABASE_URL is empty, constructing from individual components...")
+    # Try to construct DATABASE_URL from individual components
+    try:
+        db_name = os.environ.get('POSTGRES_DB', 'blogdb')
+        db_user = os.environ.get('POSTGRES_USER', 'bloguser')
+        db_password = os.environ.get('POSTGRES_PASSWORD', 'blogpass123')
+        db_host = os.environ.get('DB_HOST', 'localhost')
+        db_port = os.environ.get('DB_PORT', '5432')
+        
+        if db_password != 'blogpass123':  # Only if we have real database credentials
+            constructed_url = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+            print(f"Constructed DATABASE_URL: postgresql://{db_user}:***@{db_host}:{db_port}/{db_name}")
+            
+            DATABASES = {
+                'default': dj_database_url.parse(constructed_url)
+            }
+            print("Successfully constructed and parsed DATABASE_URL from components")
+        else:
+            raise Exception("Using fallback configuration")
+    except Exception as e:
+        print(f"Error constructing DATABASE_URL: {e}")
+        # Final fallback database configuration
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.environ.get('POSTGRES_DB', 'blogdb'),
+                'USER': os.environ.get('POSTGRES_USER', 'bloguser'),
+                'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'blogpass123'),
+                'HOST': os.environ.get('DB_HOST', 'localhost'),
+                'PORT': os.environ.get('DB_PORT', '5432'),
+            }
+        }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

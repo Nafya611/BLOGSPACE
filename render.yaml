@@ -20,10 +20,26 @@ services:
         fromDatabase:
           name: blog-db
           property: connectionString
+      - key: POSTGRES_DB
+        value: "blogdb"
+      - key: POSTGRES_USER
+        value: "bloguser"
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: blog-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: blog-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: blog-db
+          property: port
       - key: GOOGLE_OAUTH_CLIENT_ID
-        value: "864269412451-4390ku2s94fpgonstlq95q5msgd9lmi5.apps.googleusercontent.com"
+        value: ""  # Set this in Render dashboard
       - key: GOOGLE_OAUTH_CLIENT_SECRET
-        sync: false
+        value: ""  # Set this in Render dashboard
       - key: GOOGLE_OAUTH_REDIRECT_URI
         value: "https://blog-backend.onrender.com/api/user/google-callback/"
       - key: PORT
@@ -32,3 +48,5 @@ services:
 databases:
   - name: blog-db
     plan: free
+    databaseName: blogdb
+    user: bloguser
