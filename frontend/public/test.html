@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #4285F4;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vercel Deployment Test</h1>
+
+    <div class="card">
+        <h2>Static HTML Test</h2>
+        <p class="status success">✅ Success: This static HTML file is loading properly.</p>
+    </div>
+
+    <div class="card">
+        <h2>Environment Variables</h2>
+        <p>VITE_API_URL: <span id="api-url">Checking...</span></p>
+        <p>VITE_FRONTEND_URL: <span id="frontend-url">Checking...</span></p>
+    </div>
+
+    <script>
+        // Simple script to test JavaScript execution
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiUrl = document.getElementById('api-url');
+            const frontendUrl = document.getElementById('frontend-url');
+
+            try {
+                // This will only work if the script loads properly
+                apiUrl.textContent = "Script is working! (Environment variables not accessible in static HTML)";
+                apiUrl.className = "success";
+
+                frontendUrl.textContent = "Current URL: " + window.location.origin;
+                frontendUrl.className = "success";
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
