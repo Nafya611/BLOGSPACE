@@ -9,16 +9,30 @@ export default defineConfig({
     sourcemap: true,
     // Ensure assets are correctly handled
     assetsDir: 'assets',
-    // Ensure proper module output
+    // Force explicit file extensions to avoid MIME type issues
     rollupOptions: {
       output: {
         format: 'es',
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        // Ensure proper module format
+        generatedCode: {
+          constBindings: true
+        }
       }
+    },
+    // Target modern browsers that support ES modules
+    target: 'es2015',
+    // Ensure proper module resolution
+    modulePreload: {
+      polyfill: true
     }
   },
-  // Ensure proper base path
-  base: './'
+  // Ensure proper base path for assets
+  base: '/',
+  // Ensure proper module resolution
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
+  }
 })
