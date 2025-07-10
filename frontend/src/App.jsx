@@ -8,6 +8,7 @@ import Dashboard from './components/Dashboard';
 import GoogleCallback from './components/GoogleCallback';
 import HealthCheck from './components/HealthCheck';
 import TestComponent from './components/TestComponent';
+import GoogleOAuthDiagnostic from './components/GoogleOAuthDiagnostic';
 import { authApi } from './services/authApi';
 import './components/BlogList.css';
 import './components/Dashboard.css';
@@ -148,6 +149,10 @@ function AppContent() {
           <Route
             path="/auth/callback"
             element={<GoogleCallback />}
+          />
+          <Route
+            path="/oauth-diagnostic"
+            element={<GoogleOAuthDiagnostic />}
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -8,8 +8,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from django.http import JsonResponse, HttpResponseRedirect
 import urllib.parse
+import os
 
 User = get_user_model()
+
+# Get the frontend URL from environment or use a default
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+FRONTEND_CALLBACK_PATH = os.environ.get('FRONTEND_CALLBACK_PATH', '/auth/callback')
+
+# Construct the complete callback URL
+FRONTEND_CALLBACK_URL = f"{FRONTEND_URL}{FRONTEND_CALLBACK_PATH}"
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -111,10 +119,10 @@ def google_oauth_callback(request):
 
     if error:
         # Redirect to frontend with error
-        return HttpResponseRedirect(f'http://localhost:5173/auth/callback?error={error}')
+        return HttpResponseRedirect(f'{FRONTEND_CALLBACK_URL}?error={error}')
 
     if not code:
-        return HttpResponseRedirect('http://localhost:5173/auth/callback?error=no_code')
+        return HttpResponseRedirect(f'{FRONTEND_CALLBACK_URL}?error=no_code')
 
     try:
         # Exchange code for access token
@@ -131,7 +139,7 @@ def google_oauth_callback(request):
         token_json = token_response.json()
 
         if 'access_token' not in token_json:
-            return HttpResponseRedirect('http://localhost:5173/auth/callback?error=token_exchange_failed')
+            return HttpResponseRedirect(f'{FRONTEND_CALLBACK_URL}?error=token_exchange_failed&details={urllib.parse.quote(str(token_json))}')
 
         # Get user info from Google
         access_token = token_json['access_token']
@@ -155,8 +163,8 @@ def google_oauth_callback(request):
         refresh_token_jwt = str(refresh)
 
         # Redirect to frontend with tokens
-        redirect_url = f'http://localhost:5173/auth/callback?access_token={access_token_jwt}&refresh_token={refresh_token_jwt}&user_id={user.id}&email={user.email}'
+        redirect_url = f'{FRONTEND_CALLBACK_URL}?access_token={access_token_jwt}&refresh_token={refresh_token_jwt}&user_id={user.id}&email={user.email}'
         return HttpResponseRedirect(redirect_url)
 
     except Exception as e:
-        return HttpResponseRedirect(f'http://localhost:5173/auth/callback?error={str(e)}')
+        return HttpResponseRedirect(f'{FRONTEND_CALLBACK_URL}?error={urllib.parse.quote(str(e))}')

@@ -22,6 +22,9 @@ services:
       GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
       GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
       GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI}
+      # Frontend URL for callbacks
+      FRONTEND_URL: ${FRONTEND_URL}
+      FRONTEND_CALLBACK_PATH: ${FRONTEND_CALLBACK_PATH}
     depends_on:
       - db
     env_file:
@@ -32,9 +35,9 @@ services:
     volumes:
       - ./blog-db-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: BLOGdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Entrance620
+      POSTGRES_DB: blogdb
+      POSTGRES_USER: bloguser
+      POSTGRES_PASSWORD: blogpass123
 
 volumes:
   blog-db-data:
