@@ -32,9 +32,9 @@ services:
     volumes:
       - ./blog-db-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: blogdb
-      POSTGRES_USER: bloguser
-      POSTGRES_PASSWORD: blogpass123
+      POSTGRES_DB: BLOGdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Entrance620
 
 volumes:
   blog-db-data:
