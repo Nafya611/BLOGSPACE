@@ -228,15 +228,16 @@ SPECTACULAR_SETTINGS = {
 
 # CORS settings for frontend integration
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Default React dev server
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:5173",  # Vite dev server
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://localhost:8000",  # Backend Django server
+    "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "https://blogspace-iota.vercel.app"
-
-     # Production URL
+    "https://blogspace-iota.vercel.app",
+    "https://blogspace-vuer.onrender.com",
+    # Add your actual frontend deployment URL below if different
+    # "https://your-frontend-url.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
