@@ -1,10 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { fileURLToPath } from 'url'
-import path from 'path'
-
-// Convert URL to file path for ESM
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,19 +9,16 @@ export default defineConfig({
     sourcemap: true,
     // Ensure assets are correctly handled
     assetsDir: 'assets',
-    // Improved chunking for better performance
+    // Ensure proper module output
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom'],
-          vendor: ['axios']
-        }
+        format: 'es',
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
   },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
-  }
+  // Ensure proper base path
+  base: './'
 })
