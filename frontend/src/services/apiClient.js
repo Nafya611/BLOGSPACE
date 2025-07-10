@@ -49,6 +49,22 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.error('API Error:', error);
+
+    if (error.response) {
+      // Server responded with error status
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('No response received:', error.request);
+      console.error('Network or CORS issue detected');
+    } else {
+      // Something else happened
+      console.error('Error message:', error.message);
+    }
+
     if (error.response?.status === 401) {
       // Handle unauthorized access
       localStorage.removeItem('authToken');

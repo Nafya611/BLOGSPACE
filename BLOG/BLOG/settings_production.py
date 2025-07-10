@@ -295,6 +295,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://blogspace-iota.vercel.app",  # Replace with your actual Vercel URL after deployment
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",  # Add this as well
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -332,6 +333,24 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')
 GOOGLE_OAUTH_CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET', '')
 GOOGLE_OAUTH_REDIRECT_URI = os.environ.get('GOOGLE_OAUTH_REDIRECT_URI', '')
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': GOOGLE_OAUTH_CLIENT_ID,
+            'secret': GOOGLE_OAUTH_CLIENT_SECRET,
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+        'FETCH_USERINFO': True,
+    }
+}
 
 # Security settings for production
 if not DEBUG:

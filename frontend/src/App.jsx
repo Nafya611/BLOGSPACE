@@ -6,6 +6,8 @@ import BlogList from './components/BlogList';
 import AuthContainer from './components/AuthContainer';
 import Dashboard from './components/Dashboard';
 import GoogleCallback from './components/GoogleCallback';
+import HealthCheck from './components/HealthCheck';
+import TestComponent from './components/TestComponent';
 import { authApi } from './services/authApi';
 import './components/BlogList.css';
 import './components/Dashboard.css';
@@ -13,25 +15,39 @@ import './App.css';
 
 function AppContent() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Check for existing auth token on app load
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const userData = await authApi.getUserProfile();
-          setUser(userData);
-        } catch (error) {
-          // Token might be invalid, clear it
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('authToken');
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          try {
+            const userData = await authApi.getUserProfile();
+            setUser(userData);
+          } catch (error) {
+            // Token might be invalid, clear it
+            console.error('Auth check failed:', error);
+            localStorage.removeItem('authToken');
+          }
         }
+      } catch (error) {
+        console.error('Failed to check authentication:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    checkAuth();
+    // Add error boundary for the auth check
+    checkAuth().catch(error => {
+      console.error('Failed to check authentication:', error);
+      setError(error.message);
+      setLoading(false);
+    });
   }, []);
 
   const handleAuthSuccess = (userData) => {
@@ -62,6 +78,29 @@ function AppContent() {
     return children;
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h2>Loading...</h2>
+        <p>Initializing application...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
+        <h2>Application Error</h2>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>
+          Reload Page
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <Navbar user={user} onLogout={handleLogout} />
@@ -71,7 +110,11 @@ function AppContent() {
           <Route
             path="/"
             element={
-              user ? <BlogList /> : <WelcomePage />
+              <div>
+                <TestComponent />
+                <HealthCheck />
+                {user ? <BlogList /> : <WelcomePage />}
+              </div>
             }
           />
           <Route

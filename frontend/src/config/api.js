@@ -6,6 +6,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const cleanedApiUrl = API_BASE_URL.replace(/\/$/, '');
 
 console.log('API Base URL:', cleanedApiUrl);
+console.log('Environment variables:', import.meta.env);
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
 
 export const API_ENDPOINTS = {
   // Authentication endpoints
