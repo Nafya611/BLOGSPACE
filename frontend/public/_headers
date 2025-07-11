@@ -10,11 +10,50 @@
 /assets/*.jpg
   Content-Type: image/jpeg
 
+/assets/*.jpeg
+  Content-Type: image/jpeg
+
+/assets/*.gif
+  Content-Type: image/gif
+
+/assets/*.webp
+  Content-Type: image/webp
+
 /assets/*.svg
   Content-Type: image/svg+xml
+
+/images/*.png
+  Content-Type: image/png
+
+/images/*.jpg
+  Content-Type: image/jpeg
+
+/images/*.jpeg
+  Content-Type: image/jpeg
+
+/images/*.gif
+  Content-Type: image/gif
+
+/images/*.webp
+  Content-Type: image/webp
+
+/icons/*.svg
+  Content-Type: image/svg+xml
+
+/icons/*.png
+  Content-Type: image/png
 
 /*.js
   Content-Type: application/javascript
 
 /*.css
   Content-Type: text/css
+
+/*.png
+  Content-Type: image/png
+
+/*.jpg
+  Content-Type: image/jpeg
+
+/*.svg
+  Content-Type: image/svg+xml
