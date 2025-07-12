@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { blogApi } from '../services/blogApi';
 import EditPost from './EditPost';
+
 
 const BlogList = ({ refreshTrigger }) => {
   const [posts, setPosts] = useState([]);
@@ -13,11 +15,26 @@ const BlogList = ({ refreshTrigger }) => {
     previous: null,
     currentPage: 1
   });
+  // Search and filter state
+  const [search, setSearch] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedTag, setSelectedTag] = useState('');
+  // Fetch categories and tags for filter dropdowns
+  useEffect(() => {
+    blogApi.getCategories().then(setCategories).catch(() => setCategories([]));
+    blogApi.getTags().then(setTags).catch(() => setTags([]));
+  }, []);
 
-  const fetchPosts = async (page = 1) => {
+  const fetchPosts = async (page = 1, searchParams = {}) => {
     try {
       setLoading(true);
-      const data = await blogApi.getPosts({ page });
+
+      // Build query parameters
+      const params = { page, ...searchParams };
+
+      const data = await blogApi.getPosts(params);
 
       // Handle paginated response
       if (data && data.results && Array.isArray(data.results)) {
@@ -73,11 +90,55 @@ const BlogList = ({ refreshTrigger }) => {
   };
 
   useEffect(() => {
-    fetchPosts(1);
+    // Initial load without filters
+    fetchPosts(1, {});
   }, [refreshTrigger]);
 
+  // Get current filter parameters
+  const getCurrentFilters = () => {
+    const filters = {};
+    if (search.trim()) filters.search = search.trim();
+    if (selectedCategory) filters.category = selectedCategory;
+    if (selectedTag) filters.tag = selectedTag;
+    return filters;
+  };
+
+  // Handle search and filter changes
+  const handleSearchChange = (newSearch) => {
+    setSearch(newSearch);
+    // Debounce search to avoid too many API calls
+    clearTimeout(window.searchTimeout);
+    window.searchTimeout = setTimeout(() => {
+      const filters = getCurrentFilters();
+      filters.search = newSearch.trim();
+      fetchPosts(1, filters);
+    }, 500);
+  };
+
+  const handleCategoryChange = (newCategory) => {
+    setSelectedCategory(newCategory);
+    const filters = getCurrentFilters();
+    filters.category = newCategory;
+    fetchPosts(1, filters);
+  };
+
+  const handleTagChange = (newTag) => {
+    setSelectedTag(newTag);
+    const filters = getCurrentFilters();
+    filters.tag = newTag;
+    fetchPosts(1, filters);
+  };
+
+  const handleClearFilters = () => {
+    setSearch('');
+    setSelectedCategory('');
+    setSelectedTag('');
+    fetchPosts(1, {});
+  };
+
   const handlePageChange = (page) => {
-    fetchPosts(page);
+    const filters = getCurrentFilters();
+    fetchPosts(page, filters);
   };
 
   const handleNextPage = () => {
@@ -159,9 +220,49 @@ const BlogList = ({ refreshTrigger }) => {
   return (
     <div className="blog-list">
       <h2>Blog Posts</h2>
+      {/* Search and filter UI */}
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <input
+          type="text"
+          placeholder="Search posts..."
+          value={search}
+          onChange={e => handleSearchChange(e.target.value)}
+          style={{ flex: '1 1 200px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <select
+          value={selectedCategory}
+          onChange={e => handleCategoryChange(e.target.value)}
+          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+        >
+          <option value="">All Categories</option>
+          {categories.map(cat => (
+            <option key={cat.slug || cat.id} value={cat.slug || cat.name}>{cat.name}</option>
+          ))}
+        </select>
+        <select
+          value={selectedTag}
+          onChange={e => handleTagChange(e.target.value)}
+          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+        >
+          <option value="">All Tags</option>
+          {tags.map(tag => (
+            <option key={tag.slug || tag.id} value={tag.slug || tag.name}>{tag.name}</option>
+          ))}
+        </select>
+        {(search || selectedCategory || selectedTag) && (
+          <button
+            onClick={handleClearFilters}
+            style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ccc', background: '#eee' }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
       {!Array.isArray(posts) || posts.length === 0 ? (
         <p>No posts available.</p>
-      ) : (        <div className="posts-grid">
+      ) : (
+        <div className="posts-grid">
           {posts.map((post, index) => (
             <div key={post.id || post.slug || index}>
               {editingPost && editingPost.slug === post.slug ? (

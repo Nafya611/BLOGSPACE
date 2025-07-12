@@ -37,7 +37,9 @@ def create_post(request):
 @extend_schema(
     parameters=[
         OpenApiParameter(name='page', type=int, location=OpenApiParameter.QUERY, description='Page number'),
-
+        OpenApiParameter(name='search', type=str, location=OpenApiParameter.QUERY, description='Search posts by title, content, or author'),
+        OpenApiParameter(name='category', type=str, location=OpenApiParameter.QUERY, description='Filter by category slug'),
+        OpenApiParameter(name='tag', type=str, location=OpenApiParameter.QUERY, description='Filter by tag slug'),
     ],
     responses={200: PostSerializer(many=True)}
 )
@@ -48,7 +50,34 @@ def blog_list(request):
     paginator = PageNumberPagination()
     paginator.page_size = 3
 
-    posts = Post.objects.filter(author=request.user).order_by("title")
+    # Start with user's posts
+    posts = Post.objects.filter(author=request.user)
+
+    # Search filter
+    search = request.GET.get('search', '')
+    if search:
+        from django.db.models import Q
+        posts = posts.filter(
+            Q(title__icontains=search) |
+            Q(content__icontains=search) |
+            Q(author__username__icontains=search) |
+            Q(author__first_name__icontains=search) |
+            Q(author__last_name__icontains=search)
+        )
+
+    # Category filter
+    category = request.GET.get('category', '')
+    if category:
+        posts = posts.filter(category__slug=category)
+
+    # Tag filter
+    tag = request.GET.get('tag', '')
+    if tag:
+        posts = posts.filter(tag__slug=tag)
+
+    # Order by title
+    posts = posts.order_by("title")
+
     result_page = paginator.paginate_queryset(posts, request)
     serializer = PostSerializer(result_page, many=True, context={'request': request})
 
