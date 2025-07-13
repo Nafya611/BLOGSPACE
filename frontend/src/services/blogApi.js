@@ -6,7 +6,9 @@ export const blogApi = {
   // Post-related API calls
   async getPosts(params = {}) {
     try {
+      console.log('BlogAPI getPosts called with params:', params); // Debug log
       const response = await apiClient.get(API_ENDPOINTS.POSTS, { params });
+      console.log('BlogAPI getPosts response:', response.data); // Debug log
       return response.data;
     } catch (error) {
       console.error('Error fetching posts:', error);
