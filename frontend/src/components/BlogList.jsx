@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { blogApi } from '../services/blogApi';
 import EditPost from './EditPost';
+import BlogDetail from './BlogDetail';
 
 
 const BlogList = ({ refreshTrigger }) => {
@@ -9,6 +9,7 @@ const BlogList = ({ refreshTrigger }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
+  const [viewingPost, setViewingPost] = useState(null);
   const [pagination, setPagination] = useState({
     count: 0,
     next: null,
@@ -23,8 +24,26 @@ const BlogList = ({ refreshTrigger }) => {
   const [selectedTag, setSelectedTag] = useState('');
   // Fetch categories and tags for filter dropdowns
   useEffect(() => {
-    blogApi.getCategories().then(setCategories).catch(() => setCategories([]));
-    blogApi.getTags().then(setTags).catch(() => setTags([]));
+    console.log('Loading categories and tags...'); // Debug log
+    blogApi.getCategories()
+      .then(data => {
+        console.log('Categories loaded:', data); // Debug log
+        setCategories(data);
+      })
+      .catch(error => {
+        console.error('Error loading categories:', error); // Debug log
+        setCategories([]);
+      });
+    
+    blogApi.getTags()
+      .then(data => {
+        console.log('Tags loaded:', data); // Debug log
+        setTags(data);
+      })
+      .catch(error => {
+        console.error('Error loading tags:', error); // Debug log
+        setTags([]);
+      });
   }, []);
 
   const fetchPosts = async (page = 1, searchParams = {}) => {
@@ -33,8 +52,10 @@ const BlogList = ({ refreshTrigger }) => {
 
       // Build query parameters
       const params = { page, ...searchParams };
+      console.log('Fetching posts with params:', params); // Debug log
 
       const data = await blogApi.getPosts(params);
+      console.log('Posts API response:', data); // Debug log
 
       // Handle paginated response
       if (data && data.results && Array.isArray(data.results)) {
@@ -100,6 +121,7 @@ const BlogList = ({ refreshTrigger }) => {
     if (search.trim()) filters.search = search.trim();
     if (selectedCategory) filters.category = selectedCategory;
     if (selectedTag) filters.tag = selectedTag;
+    console.log('Current filters:', filters); // Debug log
     return filters;
   };
 
@@ -111,6 +133,7 @@ const BlogList = ({ refreshTrigger }) => {
     window.searchTimeout = setTimeout(() => {
       const filters = getCurrentFilters();
       filters.search = newSearch.trim();
+      console.log('Search filters:', filters); // Debug log
       fetchPosts(1, filters);
     }, 500);
   };
@@ -119,6 +142,7 @@ const BlogList = ({ refreshTrigger }) => {
     setSelectedCategory(newCategory);
     const filters = getCurrentFilters();
     filters.category = newCategory;
+    console.log('Category filters:', filters); // Debug log
     fetchPosts(1, filters);
   };
 
@@ -126,6 +150,7 @@ const BlogList = ({ refreshTrigger }) => {
     setSelectedTag(newTag);
     const filters = getCurrentFilters();
     filters.tag = newTag;
+    console.log('Tag filters:', filters); // Debug log
     fetchPosts(1, filters);
   };
 
@@ -155,6 +180,14 @@ const BlogList = ({ refreshTrigger }) => {
 
   const handleEditPost = (post) => {
     setEditingPost(post);
+  };
+
+  const handleViewPost = (post) => {
+    setViewingPost(post);
+  };
+
+  const handleBackToList = () => {
+    setViewingPost(null);
   };
 
   const handlePostUpdated = (updatedPost) => {
@@ -197,6 +230,37 @@ const BlogList = ({ refreshTrigger }) => {
     }
   };
 
+  // Client-side filtering as backup (in case server-side filtering fails)
+  const filteredPosts = posts.filter(post => {
+    // Search filter (title, content, author)
+    const searchLower = search.toLowerCase();
+    const matchesSearch = !search ||
+      post.title?.toLowerCase().includes(searchLower) ||
+      post.content?.toLowerCase().includes(searchLower) ||
+      (typeof post.author === 'string' && post.author.toLowerCase().includes(searchLower)) ||
+      (typeof post.author === 'object' && post.author?.username?.toLowerCase().includes(searchLower));
+
+    // Category filter
+    const matchesCategory = !selectedCategory ||
+      (post.category && (
+        post.category.slug === selectedCategory || 
+        post.category.name === selectedCategory ||
+        (typeof post.category === 'string' && post.category === selectedCategory)
+      ));
+
+    // Tag filter
+    const matchesTag = !selectedTag ||
+      (post.tag && Array.isArray(post.tag) && post.tag.some(t => 
+        t.slug === selectedTag || 
+        t.name === selectedTag ||
+        (typeof t === 'string' && t === selectedTag)
+      ));
+
+    return matchesSearch && matchesCategory && matchesTag;
+  });
+
+  console.log('Client-side filtered posts:', filteredPosts.length, 'of', posts.length); // Debug log
+
   if (loading) {
     return (
       <div className="blog-list">
@@ -215,6 +279,18 @@ const BlogList = ({ refreshTrigger }) => {
           <p>Make sure your Django server is running on http://localhost:8000</p>
         </div>
       </div>
+    );
+  }
+
+  // Show BlogDetail when viewing a specific post
+  if (viewingPost) {
+    return (
+      <BlogDetail
+        post={viewingPost}
+        onBack={handleBackToList}
+        onEdit={handleEditPost}
+        onDelete={handleDeletePost}
+      />
     );
   }
   return (
@@ -236,7 +312,7 @@ const BlogList = ({ refreshTrigger }) => {
         >
           <option value="">All Categories</option>
           {categories.map(cat => (
-            <option key={cat.slug || cat.id} value={cat.slug || cat.name}>{cat.name}</option>
+            <option key={cat.slug || cat.id} value={cat.slug}>{cat.name}</option>
           ))}
         </select>
         <select
@@ -246,7 +322,7 @@ const BlogList = ({ refreshTrigger }) => {
         >
           <option value="">All Tags</option>
           {tags.map(tag => (
-            <option key={tag.slug || tag.id} value={tag.slug || tag.name}>{tag.name}</option>
+            <option key={tag.slug || tag.id} value={tag.slug}>{tag.name}</option>
           ))}
         </select>
         {(search || selectedCategory || selectedTag) && (
@@ -263,7 +339,7 @@ const BlogList = ({ refreshTrigger }) => {
         <p>No posts available.</p>
       ) : (
         <div className="posts-grid">
-          {posts.map((post, index) => (
+          {filteredPosts.map((post, index) => (
             <div key={post.id || post.slug || index}>
               {editingPost && editingPost.slug === post.slug ? (
                 <EditPost
@@ -272,7 +348,12 @@ const BlogList = ({ refreshTrigger }) => {
                   onCancel={handleCancelEdit}
                 />
               ) : (
-                <article className="post-card">
+                <article
+                  className="post-card"
+                  onClick={() => handleViewPost(post)}
+                  style={{ cursor: 'pointer' }}
+                  title="Click to view full post"
+                >
                   {post.image && (
                     <div className="post-image">
                       <img
@@ -293,14 +374,20 @@ const BlogList = ({ refreshTrigger }) => {
                     <h3>{post.title || 'Untitled'}</h3>
                     <div className="post-actions">
                       <button
-                        onClick={() => handleEditPost(post)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click when clicking edit
+                          handleEditPost(post);
+                        }}
                         className="edit-btn"
                         title="Edit post"
                       >
                         ✏️
                       </button>
                       <button
-                        onClick={() => handleDeletePost(post)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click when clicking delete
+                          handleDeletePost(post);
+                        }}
                         className="delete-btn"
                         title="Delete post"
                       >

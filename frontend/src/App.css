@@ -134,3 +134,205 @@ form button:not([class]):hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
+
+/* BlogDetail Component Styles */
+.blog-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.blog-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.back-btn {
+  background: #6c757d !important;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #5a6268 !important;
+  transform: translateY(-1px);
+}
+
+.blog-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.blog-detail-image {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.blog-detail-thumbnail {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.blog-detail-header-content h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.blog-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.blog-date, .blog-author {
+  font-weight: 500;
+}
+
+.blog-taxonomy {
+  margin-bottom: 2rem;
+}
+
+.blog-category {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-tags {
+  margin-top: 0.5rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.blog-tag {
+  color: #667eea;
+  font-weight: 500;
+}
+
+.blog-content {
+  margin: 2rem 0;
+}
+
+.blog-content-text {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.no-content {
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.blog-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.retry-btn {
+  background: #28a745 !important;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.retry-btn:hover {
+  background: #218838 !important;
+}
+
+/* Responsive Design for BlogDetail */
+@media (max-width: 768px) {
+  .blog-detail {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .blog-detail-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .blog-actions {
+    justify-content: center;
+  }
+
+  .blog-detail-header-content h1 {
+    font-size: 2rem;
+  }
+
+  .blog-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Enhance post card hover effect to indicate clickability */
+.post-card {
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  border: 2px solid #667eea;
+}
+
+.post-card::after {
+  content: "👁️ Click to view full post";
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(102, 126, 234, 0.9);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.post-card:hover::after {
+  opacity: 1;
+}
+
+/* Ensure post-card positioning for pseudo-element */
+.post-card {
+  position: relative;
+}
