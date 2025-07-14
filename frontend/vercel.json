@@ -25,9 +25,37 @@
       }
     },
     {
+      "src": "/assets/(.*)\\.(png|jpg|jpeg|gif|svg|webp|ico)$",
+      "headers": {
+        "Content-Type": "image/*",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/images/(.*)\\.(png|jpg|jpeg|gif|svg|webp)$",
+      "headers": {
+        "Content-Type": "image/*",
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
+      "src": "/icons/(.*)\\.(png|jpg|jpeg|gif|svg|webp|ico)$",
+      "headers": {
+        "Content-Type": "image/*",
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
       "src": "/(.*)\\.(js|mjs|jsx)$",
       "headers": {
         "Content-Type": "application/javascript; charset=utf-8"
+      }
+    },
+    {
+      "src": "/(.*)\\.(png|jpg|jpeg|gif|svg|webp|ico)$",
+      "headers": {
+        "Content-Type": "image/*",
+        "Cache-Control": "public, max-age=86400"
       }
     },
     {

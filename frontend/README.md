@@ -60,7 +60,7 @@ VITE_API_URL=http://localhost:8000
 
 2. Open your browser and navigate to:
    ```
-   http://localhost:5173
+   http://localhost:3000
    ```
 
 ## Available Scripts
