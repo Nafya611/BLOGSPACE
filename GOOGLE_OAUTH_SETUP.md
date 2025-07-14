@@ -24,7 +24,7 @@ This guide will help you properly set up Google OAuth for your blog application 
    - Select "Web application" as the application type
    - Add a name: "BlogSpace Web Client"
    - Add authorized JavaScript origins:
-     - For development: `http://localhost:5173`
+     - For development: `http://localhost:3000`
      - For production: `https://blogspace-vuer-frontend.onrender.com`
    - Add authorized redirect URIs:
      - For development: `http://localhost:8000/api/user/google-callback/` and `http://localhost:8000/api/user/google-callback-test/`
@@ -43,7 +43,7 @@ This guide will help you properly set up Google OAuth for your blog application 
    GOOGLE_OAUTH_REDIRECT_URI="http://localhost:8000/api/user/google-callback/"
 
    # Frontend URL for callbacks
-   FRONTEND_URL="http://localhost:5173"
+   FRONTEND_URL="http://localhost:3000"
    FRONTEND_CALLBACK_PATH="/auth/callback"
    ```
 
@@ -51,7 +51,7 @@ This guide will help you properly set up Google OAuth for your blog application 
 
    ```env
    VITE_API_URL=http://localhost:8000
-   VITE_FRONTEND_URL=http://localhost:5173
+   VITE_FRONTEND_URL=http://localhost:3000
    VITE_GOOGLE_CALLBACK_PATH=/auth/callback
    ```
 
@@ -78,7 +78,7 @@ If you encounter issues with Google OAuth authentication, you can use the built-
    - This will provide detailed information about your Google OAuth configuration
 
 2. **Frontend Diagnostic Tool**:
-   - Visit `http://localhost:5173/oauth-diagnostic` (local) or `https://blogspace-vuer-frontend.onrender.com/oauth-diagnostic` (production)
+   - Visit `http://localhost:3000/oauth-diagnostic` (local) or `https://blogspace-vuer-frontend.onrender.com/oauth-diagnostic` (production)
    - This tool tests the OAuth endpoints and displays helpful debugging information
 
 3. **Common Issues**:

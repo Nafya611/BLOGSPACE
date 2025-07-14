@@ -13,7 +13,7 @@ import os
 User = get_user_model()
 
 # Get the frontend URL from environment or use a default
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 FRONTEND_CALLBACK_PATH = os.environ.get('FRONTEND_CALLBACK_PATH', '/auth/callback')
 
 # Construct the complete callback URL

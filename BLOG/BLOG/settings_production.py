@@ -294,8 +294,8 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = [
     "https://blogspace-iota.vercel.app",  # Replace with your actual Vercel URL after deployment
     "http://localhost:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",  # Add this as well
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",  # Add this as well
 ]
 
 CORS_ALLOW_CREDENTIALS = True
