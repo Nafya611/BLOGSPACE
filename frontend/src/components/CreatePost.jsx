@@ -16,6 +16,7 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [newCategory, setNewCategory] = useState('');
 
   // Fetch categories and tags on component mount
   useEffect(() => {
@@ -60,19 +61,45 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
     }));
   };
 
-  const handleAddNewTag = () => {
+  const handleAddNewTag = async () => {
     if (newTag.trim() && !tags.find(tag => tag.name.toLowerCase() === newTag.toLowerCase())) {
-      // In a real app, you'd want to create the tag via API first
-      const tempTag = {
-        id: `temp-${Date.now()}`,
-        name: newTag.trim()
-      };
-      setTags(prev => [...prev, tempTag]);
-      setFormData(prev => ({
-        ...prev,
-        tag: [...prev.tag, tempTag.id]
-      }));
-      setNewTag('');
+      try {
+        // Create the tag via API
+        const createdTag = await blogApi.createTag({ name: newTag.trim() });
+        setTags(prev => [...prev, createdTag]);
+        setFormData(prev => ({
+          ...prev,
+          tag: [...prev.tag, createdTag.id]
+        }));
+        setNewTag('');
+        setSuccess('Tag created successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (error) {
+        console.error('Error creating tag:', error);
+        setError('Failed to create tag. Please try again.');
+        setTimeout(() => setError(''), 3000);
+      }
+    }
+  };
+
+  const handleAddNewCategory = async () => {
+    if (newCategory.trim() && !categories.find(cat => cat.name.toLowerCase() === newCategory.toLowerCase())) {
+      try {
+        // Create the category via API
+        const createdCategory = await blogApi.createCategory({ name: newCategory.trim() });
+        setCategories(prev => [...prev, createdCategory]);
+        setFormData(prev => ({
+          ...prev,
+          category: createdCategory.id
+        }));
+        setNewCategory('');
+        setSuccess('Category created successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+      } catch (error) {
+        console.error('Error creating category:', error);
+        setError('Failed to create category. Please try again.');
+        setTimeout(() => setError(''), 3000);
+      }
     }
   };
   const handleSubmit = async (e) => {
@@ -275,6 +302,23 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
                 </option>
               ))}
             </select>
+
+            <div className="add-category">
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Add new category"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddNewCategory())}
+              />
+              <button
+                type="button"
+                onClick={handleAddNewCategory}
+                className="add-category-btn"
+              >
+                Add Category
+              </button>
+            </div>
           </div>
 
           <div className="form-group">

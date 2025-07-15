@@ -67,6 +67,16 @@ export const blogApi = {
     }
   },
 
+  async createCategory(categoryData) {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_CATEGORY, categoryData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating category:', error);
+      throw error;
+    }
+  },
+
   async getPostsByCategory(slug) {
     try {
       const response = await apiClient.get(API_ENDPOINTS.CATEGORY_POSTS(slug));
@@ -84,6 +94,16 @@ export const blogApi = {
       return response.data;
     } catch (error) {
       console.error('Error fetching tags:', error);
+      throw error;
+    }
+  },
+
+  async createTag(tagData) {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_TAG, tagData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating tag:', error);
       throw error;
     }
   },

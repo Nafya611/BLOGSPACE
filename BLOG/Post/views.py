@@ -30,6 +30,7 @@ def create_post(request):
 
     serializer= PostSerializer(data=request.data,context={'request':request})
     if serializer.is_valid():
+        # Save - the serializer will handle setting the author from request.user
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -44,14 +45,12 @@ def create_post(request):
     responses={200: PostSerializer(many=True)}
 )
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
 def blog_list(request):
     paginator = PageNumberPagination()
     paginator.page_size = 3
 
-    # Start with user's posts
-    posts = Post.objects.filter(author=request.user)
+    # Start with all published posts
+    posts = Post.objects.filter(is_published=True)
 
     # Search filter
     search = request.GET.get('search', '')
@@ -66,12 +65,12 @@ def blog_list(request):
         )
 
     # Category filter
-    category = request.GET.get('category', '')
+    category = request.GET.get('category', '').strip()
     if category:
         posts = posts.filter(category__slug=category)
 
     # Tag filter
-    tag = request.GET.get('tag', '')
+    tag = request.GET.get('tag', '').strip()
     if tag:
         posts = posts.filter(tag__slug=tag)
 
@@ -120,8 +119,6 @@ def blog_detail(request, slug):
 # Tag
 
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
 def tag_list(request):
     tag=Tag.objects.all().order_by("name")
     serializer=TagSerializer(tag,many=True)
@@ -148,8 +145,6 @@ def get_Post_tag_slug(request,slug):
 
 
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
 def category_list(request):
     category = Category.objects.all().order_by('name')
     serializer = CategorySerializer(category, many=True)
@@ -307,6 +302,39 @@ def delete_comment(request,pk):
     comment=Comment.objects.get(pk=pk)
     comment.delete()
     return Response({"message":"comment deleted successfully"})
+@extend_schema(
+    methods=['POST'],
+    request=CategorySerializer,
+    responses=CategorySerializer
+)
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def create_category(request):
+    serializer = CategorySerializer(data=request.data)
+    if serializer.is_valid():
+        # Save with the current user
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@extend_schema(
+    methods=['POST'],
+    request=TagSerializer,
+    responses=TagSerializer
+)
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def create_tag(request):
+    serializer = TagSerializer(data=request.data)
+    if serializer.is_valid():
+        # Save with the current user
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 

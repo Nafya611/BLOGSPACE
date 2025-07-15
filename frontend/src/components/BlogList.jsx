@@ -34,7 +34,7 @@ const BlogList = ({ refreshTrigger }) => {
         console.error('Error loading categories:', error); // Debug log
         setCategories([]);
       });
-    
+
     blogApi.getTags()
       .then(data => {
         console.log('Tags loaded:', data); // Debug log
@@ -118,9 +118,9 @@ const BlogList = ({ refreshTrigger }) => {
   // Get current filter parameters
   const getCurrentFilters = () => {
     const filters = {};
-    if (search.trim()) filters.search = search.trim();
-    if (selectedCategory) filters.category = selectedCategory;
-    if (selectedTag) filters.tag = selectedTag;
+    if (search && search.trim()) filters.search = search.trim();
+    if (selectedCategory && selectedCategory.trim()) filters.category = selectedCategory.trim();
+    if (selectedTag && selectedTag.trim()) filters.tag = selectedTag.trim();
     console.log('Current filters:', filters); // Debug log
     return filters;
   };
@@ -139,18 +139,20 @@ const BlogList = ({ refreshTrigger }) => {
   };
 
   const handleCategoryChange = (newCategory) => {
+    console.log('Category changed to:', newCategory); // Debug log
     setSelectedCategory(newCategory);
     const filters = getCurrentFilters();
     filters.category = newCategory;
-    console.log('Category filters:', filters); // Debug log
+    console.log('Category filters being sent:', filters); // Debug log
     fetchPosts(1, filters);
   };
 
   const handleTagChange = (newTag) => {
+    console.log('Tag changed to:', newTag); // Debug log
     setSelectedTag(newTag);
     const filters = getCurrentFilters();
     filters.tag = newTag;
-    console.log('Tag filters:', filters); // Debug log
+    console.log('Tag filters being sent:', filters); // Debug log
     fetchPosts(1, filters);
   };
 
@@ -217,11 +219,13 @@ const BlogList = ({ refreshTrigger }) => {
         const shouldGoToPreviousPage = remainingPostsOnPage === 0 && pagination.currentPage > 1;
 
         if (shouldGoToPreviousPage) {
-          // Go to previous page
-          fetchPosts(pagination.currentPage - 1);
+          // Go to previous page with current filters
+          const filters = getCurrentFilters();
+          fetchPosts(pagination.currentPage - 1, filters);
         } else {
-          // Refetch current page to maintain proper pagination
-          fetchPosts(pagination.currentPage);
+          // Refetch current page with current filters
+          const filters = getCurrentFilters();
+          fetchPosts(pagination.currentPage, filters);
         }
       } catch (error) {
         console.error('Error deleting post:', error);
@@ -229,37 +233,6 @@ const BlogList = ({ refreshTrigger }) => {
       }
     }
   };
-
-  // Client-side filtering as backup (in case server-side filtering fails)
-  const filteredPosts = posts.filter(post => {
-    // Search filter (title, content, author)
-    const searchLower = search.toLowerCase();
-    const matchesSearch = !search ||
-      post.title?.toLowerCase().includes(searchLower) ||
-      post.content?.toLowerCase().includes(searchLower) ||
-      (typeof post.author === 'string' && post.author.toLowerCase().includes(searchLower)) ||
-      (typeof post.author === 'object' && post.author?.username?.toLowerCase().includes(searchLower));
-
-    // Category filter
-    const matchesCategory = !selectedCategory ||
-      (post.category && (
-        post.category.slug === selectedCategory || 
-        post.category.name === selectedCategory ||
-        (typeof post.category === 'string' && post.category === selectedCategory)
-      ));
-
-    // Tag filter
-    const matchesTag = !selectedTag ||
-      (post.tag && Array.isArray(post.tag) && post.tag.some(t => 
-        t.slug === selectedTag || 
-        t.name === selectedTag ||
-        (typeof t === 'string' && t === selectedTag)
-      ));
-
-    return matchesSearch && matchesCategory && matchesTag;
-  });
-
-  console.log('Client-side filtered posts:', filteredPosts.length, 'of', posts.length); // Debug log
 
   if (loading) {
     return (
@@ -339,7 +312,7 @@ const BlogList = ({ refreshTrigger }) => {
         <p>No posts available.</p>
       ) : (
         <div className="posts-grid">
-          {filteredPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <div key={post.id || post.slug || index}>
               {editingPost && editingPost.slug === post.slug ? (
                 <EditPost
