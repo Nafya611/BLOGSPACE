@@ -52,12 +52,12 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
     }
   };
 
-  const handleTagToggle = (tagId) => {
+  const handleTagToggle = (tagSlug) => {
     setFormData(prev => ({
       ...prev,
-      tag: prev.tag.includes(tagId)
-        ? prev.tag.filter(id => id !== tagId)
-        : [...prev.tag, tagId]
+      tag: prev.tag.includes(tagSlug)
+        ? prev.tag.filter(slug => slug !== tagSlug)
+        : [...prev.tag, tagSlug]
     }));
   };
 
@@ -69,7 +69,7 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         setTags(prev => [...prev, createdTag]);
         setFormData(prev => ({
           ...prev,
-          tag: [...prev.tag, createdTag.id]
+          tag: [...prev.tag, createdTag.slug]
         }));
         setNewTag('');
         setSuccess('Tag created successfully!');
@@ -90,7 +90,7 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         setCategories(prev => [...prev, createdCategory]);
         setFormData(prev => ({
           ...prev,
-          category: createdCategory.id
+          category: createdCategory.slug
         }));
         setNewCategory('');
         setSuccess('Category created successfully!');
@@ -129,7 +129,7 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
 
         // Add category if selected (as JSON string for FormData)
         if (formData.category) {
-          const selectedCategory = categories.find(cat => cat.id === formData.category);
+          const selectedCategory = categories.find(cat => cat.slug === formData.category);
           if (selectedCategory) {
             formDataToSend.append('category', JSON.stringify({
               name: selectedCategory.name,
@@ -141,8 +141,8 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         // Add tags if selected (as JSON string for FormData)
         if (formData.tag.length > 0) {
           const tagData = [];
-          for (const tagId of formData.tag) {
-            const selectedTag = tags.find(tag => tag.id === tagId);
+          for (const tagSlug of formData.tag) {
+            const selectedTag = tags.find(tag => tag.slug === tagSlug);
             if (selectedTag) {
               tagData.push({
                 name: selectedTag.name,
@@ -169,7 +169,7 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
 
         // Add category if selected
         if (formData.category) {
-          const selectedCategory = categories.find(cat => cat.id === formData.category);
+          const selectedCategory = categories.find(cat => cat.slug === formData.category);
           if (selectedCategory) {
             postData.category = {
               name: selectedCategory.name,
@@ -181,8 +181,8 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         // Add tags if selected
         if (formData.tag.length > 0) {
           const tagData = [];
-          for (const tagId of formData.tag) {
-            const selectedTag = tags.find(tag => tag.id === tagId);
+          for (const tagSlug of formData.tag) {
+            const selectedTag = tags.find(tag => tag.slug === tagSlug);
             if (selectedTag) {
               tagData.push({
                 name: selectedTag.name,
@@ -293,13 +293,11 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
               id="category"
               name="category"
               value={formData.category}
-              onChange={handleChange}
+              onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
             >
               <option value="">Select a category</option>
               {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
+                <option key={category.slug || category.id} value={category.slug}>{category.name}</option>
               ))}
             </select>
 
@@ -360,11 +358,11 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
           <div className="tags-section">
             <div className="existing-tags">
               {tags.map(tag => (
-                <label key={tag.id} className="tag-checkbox">
+                <label key={tag.slug || tag.id} className="tag-checkbox">
                   <input
                     type="checkbox"
-                    checked={formData.tag.includes(tag.id)}
-                    onChange={() => handleTagToggle(tag.id)}
+                    checked={formData.tag.includes(tag.slug)}
+                    onChange={() => handleTagToggle(tag.slug)}
                   />
                   <span className="tag-label">{tag.name}</span>
                 </label>
