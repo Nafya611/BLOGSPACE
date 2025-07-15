@@ -62,8 +62,8 @@ After deployment, update the backend's CORS settings:
    ```python
    CORS_ALLOWED_ORIGINS = [
        "https://your-app.vercel.app",  # Your actual Vercel URL
-       "http://localhost:3000",
-       "http://localhost:3000",
+       "http://localhost:5173",
+       "http://localhost:5173",
    ]
    ```
 
