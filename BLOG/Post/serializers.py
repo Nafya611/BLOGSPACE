@@ -9,14 +9,24 @@ class TagSerializer(serializers.ModelSerializer):
      class Meta:
           model=Tag
           fields=['id','name','slug']
-          read_only_fields= ['id']
+          read_only_fields= ['id', 'slug']
+
+     def create(self, validated_data):
+          # Auto-generate slug from name
+          validated_data['slug'] = slugify(validated_data['name'])
+          return super().create(validated_data)
 
 
 class CategorySerializer(serializers.ModelSerializer):
      class Meta:
           model=Category
           fields=['id','name','slug']
-          read_only_fields=['id']
+          read_only_fields=['id', 'slug']
+
+     def create(self, validated_data):
+          # Auto-generate slug from name
+          validated_data['slug'] = slugify(validated_data['name'])
+          return super().create(validated_data)
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,8 +40,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = [ 'title', 'slug', 'content', 'image', 'tag', 'category', 'author','created_at', 'updated_at','is_published']
-        read_only_fields = [ 'author','slug', 'created_at', 'updated_at','is_published']
+        fields = [ 'title', 'slug', 'content', 'image', 'tag', 'category', 'author','created_at', 'updated_at','is_published', 'is_draft']
+        read_only_fields = [ 'author','slug', 'created_at', 'updated_at']
 
     def to_representation(self, instance):
         """Convert model instance to representation, ensuring absolute image URLs"""

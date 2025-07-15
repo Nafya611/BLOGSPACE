@@ -23,10 +23,12 @@ export const API_ENDPOINTS = {
 
   // Category endpoints
   CATEGORIES: '/api/Post/category_list/',
+  CREATE_CATEGORY: '/api/Post/create_category/',
   CATEGORY_POSTS: (slug) => `/api/Post/post_category_slug/${slug}`,
 
   // Tag endpoints
   TAGS: '/api/Post/tag_list/',
+  CREATE_TAG: '/api/Post/create_tag/',
   TAG_POSTS: (slug) => `/api/Post/post_tag_slug/${slug}`,
 
   // Comment endpoints
