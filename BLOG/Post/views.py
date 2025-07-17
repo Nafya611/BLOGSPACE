@@ -188,13 +188,10 @@ def read_comments(request,slug):
         return Response({"error": "Post not found"},status=status.HTTP_404_NOT_FOUND)
     post=Post.objects.get(slug=slug)
 
-    paginator=PageNumberPagination()
-    paginator.page_size= 1
+    # Return all comments without pagination
     comment=Comment.objects.filter(post=post).order_by('-created_at')
-    paginated_comment=paginator.paginate_queryset(comment,request)
-
-    serializer=CommentSerializer(paginated_comment,many=True)
-    return paginator.get_paginated_response(serializer.data)
+    serializer=CommentSerializer(comment,many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @extend_schema(
         methods=['POST'],
@@ -214,7 +211,7 @@ def send_comment(request,slug):
 
     serializer=CommentSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(post=post)
+        serializer.save(post=post, author=request.user)
         return Response(serializer.data,status=status.HTTP_201_CREATED)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 

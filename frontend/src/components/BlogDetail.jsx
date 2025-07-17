@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { blogApi } from '../services/blogApi';
+import CommentSection from './CommentSection';
 
 const BlogDetail = ({ post, onBack, onEdit, onDelete }) => {
   const [fullPost, setFullPost] = useState(post);
@@ -174,6 +175,7 @@ const BlogDetail = ({ post, onBack, onEdit, onDelete }) => {
           </footer>
         )}
       </article>
+      <CommentSection postSlug={fullPost.slug} isAuthenticated={!!localStorage.getItem('authToken')} />
     </div>
   );
 };
