@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { blogApi } from '../services/blogApi';
 import CommentSection from './CommentSection';
+import './BlogDetail.css';
 
 const BlogDetail = ({ post, onBack, onEdit, onDelete, user }) => {
   const [fullPost, setFullPost] = useState(post);

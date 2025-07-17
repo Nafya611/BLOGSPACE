@@ -1,0 +1,244 @@
+.blog-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.blog-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.blog-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.blog-actions .edit-btn,
+.blog-actions .delete-btn {
+  background: none;
+  border: 2px solid;
+  cursor: pointer;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.blog-actions .edit-btn {
+  color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.blog-actions .edit-btn:hover {
+  background: #4a90e2;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+.blog-actions .delete-btn {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.blog-actions .delete-btn:hover {
+  background: #e74c3c;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+.blog-detail-content {
+  line-height: 1.6;
+}
+
+.blog-detail-image {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.blog-detail-thumbnail {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.blog-detail-header-content h1 {
+  color: #2c3e50;
+  margin: 0 0 1.5rem 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.blog-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #4a90e2;
+}
+
+.blog-date {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+.blog-author {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.blog-taxonomy {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #fff3cd;
+  border-radius: 6px;
+  border: 1px solid #ffeaa7;
+}
+
+.blog-category {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.blog-tags {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.blog-tag {
+  color: #4a90e2;
+  font-weight: 500;
+}
+
+.blog-content {
+  margin: 2rem 0;
+}
+
+.blog-content-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+.blog-content-text p {
+  margin-bottom: 1.5rem;
+}
+
+.no-content {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.blog-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.error {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  padding: 1rem;
+  color: #c33;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.retry-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.retry-btn:hover {
+  background: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .blog-detail {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  .blog-detail-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .blog-actions {
+    justify-content: center;
+  }
+
+  .blog-detail-header-content h1 {
+    font-size: 2rem;
+  }
+
+  .blog-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .blog-content-text {
+    font-size: 1rem;
+  }
+}

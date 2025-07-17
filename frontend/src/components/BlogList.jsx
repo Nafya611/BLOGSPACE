@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { blogApi } from '../services/blogApi';
 import EditPost from './EditPost';
 import BlogDetail from './BlogDetail';
+import './BlogList.css';
 // Remove: import { AuthContext } from '../context/AuthContext';
 
 
@@ -329,6 +330,32 @@ const BlogList = ({ refreshTrigger, user }) => {
                   style={{ cursor: 'pointer' }}
                   title="Click to view full post"
                 >
+                  {/* Edit/Delete buttons - positioned at top-right */}
+                  {user && post.author && post.author.username === user.username && (
+                    <div className="post-actions">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditPost(post);
+                        }}
+                        className="edit-btn"
+                        title="Edit post"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePost(post);
+                        }}
+                        className="delete-btn"
+                        title="Delete post"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  )}
+
                   {post.image && (
                     <div className="post-image">
                       <img
@@ -347,37 +374,17 @@ const BlogList = ({ refreshTrigger, user }) => {
                   )}
                   <div className="post-header">
                     <h3>{post.title || 'Untitled'}</h3>
-                    <div className="post-actions">
-                      {user && post.author && post.author.username === user.username && (
-                        <>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditPost(post);
-                            }}
-                            className="edit-btn"
-                            title="Edit post"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeletePost(post);
-                            }}
-                            className="delete-btn"
-                            title="Delete post"
-                          >
-                            🗑️
-                          </button>
-                        </>
+
+                    {/* Author and date information */}
+                    <div className="post-meta">
+                      <span className="post-date">
+                        {post.created_at && new Date(post.created_at).toLocaleDateString()}
+                      </span>
+                      {post.author && post.author.username && (
+                        <span className="post-author">by {post.author.username}</span>
                       )}
                     </div>
                   </div>
-                  <p className="post-meta">
-                    {post.created_at && new Date(post.created_at).toLocaleDateString()}
-                    {post.author && post.author.username && ` by ${post.author.username}`}
-                  </p>
                   {post.content && (
                     <div className="post-excerpt">
                       {String(post.content).substring(0, 150)}...

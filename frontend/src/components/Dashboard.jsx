@@ -117,7 +117,7 @@ const Dashboard = ({ user: initialUser, onUserUpdate, onLogout }) => {
 
             <div className="recent-activity">
               <h2>Recent Activity</h2>
-              <BlogList refreshTrigger={refreshPosts} />
+              <BlogList refreshTrigger={refreshPosts} user={user} />
             </div>
           </div>
         );

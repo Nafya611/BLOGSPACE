@@ -46,6 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     tag = TagSerializer(many=True, required=False)
     category = CategorySerializer(required=False)
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Post
@@ -145,3 +146,43 @@ class PostSerializer(serializers.ModelSerializer):
         self._get_or_create_tags(tags, post)
 
         return post
+
+    def update(self, instance, validated_data):
+        """Update post instance with validated data"""
+        user = self.context['request'].user
+
+        # Handle JSON strings from FormData
+        tags = validated_data.pop('tag', None)
+        if isinstance(tags, str):
+            try:
+                tags = json.loads(tags)
+            except json.JSONDecodeError:
+                tags = None
+
+        categories = validated_data.pop('category', None)
+        if isinstance(categories, str):
+            try:
+                categories = json.loads(categories)
+            except json.JSONDecodeError:
+                categories = None
+
+        # Update basic fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # Handle category update (single ForeignKey)
+        if categories is not None:
+            if categories:
+                category_obj, _ = Category.objects.get_or_create(user=user, **categories)
+                instance.category = category_obj
+            else:
+                instance.category = None
+
+        # Handle tags update
+        if tags is not None:
+            instance.tag.clear()  # Clear existing tags
+            if tags:
+                self._get_or_create_tags(tags, instance)
+
+        instance.save()
+        return instance
