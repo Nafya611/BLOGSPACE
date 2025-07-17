@@ -115,7 +115,7 @@ function AppContent() {
               <div>
                 <TestComponent />
                 <HealthCheck />
-                {user ? <BlogList /> : <WelcomePage />}
+                {user ? <BlogList user={user} /> : <WelcomePage />}
               </div>
             }
           />
@@ -123,7 +123,7 @@ function AppContent() {
             path="/blog"
             element={
               <ProtectedRoute>
-                <BlogList />
+                <BlogList user={user} />
               </ProtectedRoute>
             }
           />

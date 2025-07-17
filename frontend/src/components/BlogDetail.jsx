@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { blogApi } from '../services/blogApi';
 import CommentSection from './CommentSection';
 
-const BlogDetail = ({ post, onBack, onEdit, onDelete }) => {
+const BlogDetail = ({ post, onBack, onEdit, onDelete, user }) => {
   const [fullPost, setFullPost] = useState(post);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -73,20 +73,24 @@ const BlogDetail = ({ post, onBack, onEdit, onDelete }) => {
           ← Back to Posts
         </button>
         <div className="blog-actions">
-          <button
-            onClick={() => onEdit(fullPost)}
-            className="edit-btn"
-            title="Edit post"
-          >
-            ✏️ Edit
-          </button>
-          <button
-            onClick={() => onDelete(fullPost)}
-            className="delete-btn"
-            title="Delete post"
-          >
-            🗑️ Delete
-          </button>
+          {user && fullPost.author && fullPost.author.username === user.username && (
+            <>
+              <button
+                onClick={() => onEdit(fullPost)}
+                className="edit-btn"
+                title="Edit post"
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={() => onDelete(fullPost)}
+                className="delete-btn"
+                title="Delete post"
+              >
+                🗑️ Delete
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -116,10 +120,9 @@ const BlogDetail = ({ post, onBack, onEdit, onDelete }) => {
                 day: 'numeric'
               })}
             </span>
-            {fullPost.author && (
+            {fullPost.author && fullPost.author.username && (
               <span className="blog-author">
-                by {typeof fullPost.author === 'string' ? fullPost.author :
-                  typeof fullPost.author === 'object' && fullPost.author.username ? fullPost.author.username : 'Unknown Author'}
+                by {fullPost.author.username}
               </span>
             )}
           </div>

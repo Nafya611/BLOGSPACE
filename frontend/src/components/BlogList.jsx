@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { blogApi } from '../services/blogApi';
 import EditPost from './EditPost';
 import BlogDetail from './BlogDetail';
+// Remove: import { AuthContext } from '../context/AuthContext';
 
 
-const BlogList = ({ refreshTrigger }) => {
+const BlogList = ({ refreshTrigger, user }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,6 +23,7 @@ const BlogList = ({ refreshTrigger }) => {
   const [tags, setTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
+  // Remove: const { user } = useContext(AuthContext); // get logged-in user
   // Fetch categories and tags for filter dropdowns
   useEffect(() => {
     console.log('Loading categories and tags...'); // Debug log
@@ -346,32 +348,35 @@ const BlogList = ({ refreshTrigger }) => {
                   <div className="post-header">
                     <h3>{post.title || 'Untitled'}</h3>
                     <div className="post-actions">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click when clicking edit
-                          handleEditPost(post);
-                        }}
-                        className="edit-btn"
-                        title="Edit post"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click when clicking delete
-                          handleDeletePost(post);
-                        }}
-                        className="delete-btn"
-                        title="Delete post"
-                      >
-                        🗑️
-                      </button>
+                      {user && post.author && post.author.username === user.username && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditPost(post);
+                            }}
+                            className="edit-btn"
+                            title="Edit post"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeletePost(post);
+                            }}
+                            className="delete-btn"
+                            title="Delete post"
+                          >
+                            🗑️
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   <p className="post-meta">
                     {post.created_at && new Date(post.created_at).toLocaleDateString()}
-                    {post.author && (typeof post.author === 'string' ? ` by ${post.author}` :
-                      typeof post.author === 'object' && post.author.username ? ` by ${post.author.username}` : '')}
+                    {post.author && post.author.username && ` by ${post.author.username}`}
                   </p>
                   {post.content && (
                     <div className="post-excerpt">
