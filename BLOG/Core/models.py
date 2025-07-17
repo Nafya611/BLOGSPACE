@@ -75,7 +75,7 @@ class Post(models.Model):
     tag=models.ManyToManyField(Tag,related_name='posts',blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     content=models.TextField()
-    image=models.ImageField(upload_to='post_images/', blank=True, null=True)
+    image=models.URLField(max_length=500, blank=True, null=True)  # Changed to URLField for Cloudinary URLs
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     published_at=models.DateTimeField(auto_now_add=True)

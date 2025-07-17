@@ -2,10 +2,20 @@ from rest_framework import serializers
 from Core.models import Post,Tag,Category,Comment
 from django.utils.text import slugify
 import json
-import json
+import os
+import cloudinary
+import cloudinary.uploader
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+    secure=True
+)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -47,22 +57,22 @@ class PostSerializer(serializers.ModelSerializer):
     tag = TagSerializer(many=True, required=False)
     category = CategorySerializer(required=False)
     author = UserSerializer(read_only=True)
+    image = serializers.ImageField(write_only=True, required=False)  # For uploads
+    image_url = serializers.URLField(source='image', read_only=True)  # For display
 
     class Meta:
         model = Post
-        fields = [ 'title', 'slug', 'content', 'image', 'tag', 'category', 'author','created_at', 'updated_at','is_published', 'is_draft']
-        read_only_fields = [ 'author','slug', 'created_at', 'updated_at']
+        fields = [ 'title', 'slug', 'content', 'image', 'image_url', 'tag', 'category', 'author','created_at', 'updated_at','is_published', 'is_draft']
+        read_only_fields = [ 'author','slug', 'created_at', 'updated_at', 'image_url']
 
     def to_representation(self, instance):
-        """Convert model instance to representation, ensuring absolute image URLs"""
+        """Convert model instance to representation, handling Cloudinary image URLs"""
         data = super().to_representation(instance)
 
-        # Convert relative image URL to absolute URL
-        if data.get('image'):
-            request = self.context.get('request')
-            if request:
-                data['image'] = request.build_absolute_uri(data['image'])
+        # Remove the write-only image field from the response
+        data.pop('image', None)
 
+        # The image_url field will be automatically populated from the URLField
         return data
 
     def __init__(self, *args, **kwargs):
@@ -92,6 +102,28 @@ class PostSerializer(serializers.ModelSerializer):
 
         return super().to_internal_value(data)
 
+    def _upload_to_cloudinary(self, image_file):
+        """Upload image to Cloudinary and return the URL"""
+        try:
+            if image_file:
+                # Get the file content and name
+                file_content = image_file.read()
+                file_name = getattr(image_file, 'name', 'upload')
+
+                result = cloudinary.uploader.upload(
+                    file_content,
+                    folder="blog_images",
+                    public_id=f"post_{file_name}_{hash(file_content)}",
+                    resource_type="auto"
+                )
+                print(f"Cloudinary upload successful: {result['secure_url']}")
+                return result['secure_url']
+        except Exception as e:
+            print(f"Cloudinary upload error: {e}")
+            import traceback
+            traceback.print_exc()
+        return None
+
     def _get_or_create_tags(self, tags, post):
         """Handle getting or creating tags"""
         auth_user = self.context['request'].user
@@ -106,6 +138,12 @@ class PostSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = validated_data.get('title')
         slug = slugify(title)
+
+        # Handle image upload to Cloudinary
+        image_file = validated_data.pop('image', None)
+        cloudinary_url = None
+        if image_file:
+            cloudinary_url = self._upload_to_cloudinary(image_file)
 
         # Handle JSON strings from FormData
         tags = validated_data.pop('tag', [])
@@ -136,6 +174,11 @@ class PostSerializer(serializers.ModelSerializer):
             **validated_data
         )
 
+        # Set Cloudinary URL if upload was successful
+        if cloudinary_url:
+            post.image = cloudinary_url
+            post.save()
+
         # Handle category (single ForeignKey)
         if categories:
             category_obj, _ = Category.objects.get_or_create(user=user, **categories)
@@ -150,6 +193,13 @@ class PostSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Update post instance with validated data"""
         user = self.context['request'].user
+
+        # Handle image upload to Cloudinary
+        image_file = validated_data.pop('image', None)
+        if image_file:
+            cloudinary_url = self._upload_to_cloudinary(image_file)
+            if cloudinary_url:
+                instance.image = cloudinary_url
 
         # Handle JSON strings from FormData
         tags = validated_data.pop('tag', None)

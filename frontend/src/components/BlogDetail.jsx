@@ -96,14 +96,14 @@ const BlogDetail = ({ post, onBack, onEdit, onDelete, user }) => {
       </div>
 
       <article className="blog-detail-content">
-        {fullPost.image && (
+        {fullPost.image_url && (
           <div className="blog-detail-image">
             <img
-              src={fullPost.image}
+              src={fullPost.image_url}
               alt={fullPost.title || 'Blog post image'}
               className="blog-detail-thumbnail"
               onError={(e) => {
-                console.error('Failed to load image:', fullPost.image);
+                console.error('Failed to load image:', fullPost.image_url);
                 e.target.style.display = 'none';
               }}
             />

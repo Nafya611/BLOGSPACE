@@ -223,11 +223,11 @@ const EditPost = ({ post, onPostUpdated, onCancel }) => {
 
         <div className="form-group">
           <label htmlFor="image">Update Image:</label>
-          {post.image && (
+          {post.image_url && (
             <div className="current-image">
               <p>Current image:</p>
               <img
-                src={post.image}
+                src={post.image_url}
                 alt="Current post image"
                 style={{ maxWidth: '200px', maxHeight: '150px', marginBottom: '10px' }}
               />

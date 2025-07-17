@@ -356,18 +356,18 @@ const BlogList = ({ refreshTrigger, user }) => {
                     </div>
                   )}
 
-                  {post.image && (
+                  {post.image_url && (
                     <div className="post-image">
                       <img
-                        src={post.image}
+                        src={post.image_url}
                         alt={post.title || 'Post image'}
                         className="post-thumbnail"
                         onError={(e) => {
-                          console.error('Failed to load image:', post.image);
+                          console.error('Failed to load image:', post.image_url);
                           e.target.style.display = 'none';
                         }}
                         onLoad={() => {
-                          console.log('Image loaded successfully:', post.image);
+                          console.log('Image loaded successfully:', post.image_url);
                         }}
                       />
                     </div>
