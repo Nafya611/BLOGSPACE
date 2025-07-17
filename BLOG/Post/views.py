@@ -91,13 +91,15 @@ def blog_list(request):
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def blog_detail(request, slug):
-    post = get_object_or_404(Post, author=request.user, slug=slug)
-
     if request.method == 'GET':
+        post = get_object_or_404(Post, slug=slug, is_published=True)
         serializer = PostSerializer(post, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    elif request.method == 'PUT':
+    # For edit/delete, only the author can proceed
+    post = get_object_or_404(Post, author=request.user, slug=slug)
+
+    if request.method == 'PUT':
         serializer = PostSerializer(instance=post, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()

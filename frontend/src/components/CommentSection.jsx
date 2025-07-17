@@ -91,7 +91,7 @@ const CommentSection = ({ postSlug, isAuthenticated }) => {
                   )}
                 </div>
                 <div className="comment-info">
-                  <span className="comment-name">{comment.name || comment.author?.username || 'Anonymous'}</span>
+                  <span className="comment-name">{comment.author?.username}</span>
                   <span className="comment-date">{comment.created_at && timeAgo(comment.created_at)}</span>
                 </div>
                 <button className="comment-reply-btn">Reply</button>
@@ -114,20 +114,6 @@ const CommentSection = ({ postSlug, isAuthenticated }) => {
       )}
       {isAuthenticated && (
         <form onSubmit={handleSubmit} className="comment-form" style={{ marginTop: 20 }}>
-          <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Your name (optional)"
-            style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #ccc', marginBottom: 8 }}
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Your email (optional)"
-            style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #ccc', marginBottom: 8 }}
-          />
           <textarea
             value={content}
             onChange={e => setContent(e.target.value)}

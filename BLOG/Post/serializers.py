@@ -3,6 +3,9 @@ from Core.models import Post,Tag,Category,Comment
 from django.utils.text import slugify
 import json
 import json
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,10 +31,16 @@ class CategorySerializer(serializers.ModelSerializer):
           validated_data['slug'] = slugify(validated_data['name'])
           return super().create(validated_data)
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
 class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
     class Meta:
         model=Comment
-        fields=['id','name','email','content','created_at','is_approved','author']
+        fields=['id','content','created_at','is_approved','author']
         read_only_fields = ['id','created_at','is_approved','author']
 
 class PostSerializer(serializers.ModelSerializer):
