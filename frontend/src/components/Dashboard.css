@@ -165,7 +165,8 @@
   left: 0;
   right: 0;
   height: 80px;
-  background: white;
+  background: linear-gradient(135deg, #2c3e50, #34495e) !important;
+  border-bottom: 3px solid #3498db;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   display: flex;
@@ -175,10 +176,20 @@
 }
 
 .nav-left .nav-logo {
-  color: #667eea;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-left .nav-logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
 }
 
 .nav-center {
@@ -195,20 +206,26 @@
 .nav-link {
   background: none;
   border: none;
-  color: #6c757d;
+  color: white;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: all 0.3s ease;
-  position: relative;
 }
 
 .nav-link:hover {
-  color: #667eea;
-  background: #f0f2ff;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
+
+.nav-link.active {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+/* Profile dropdown styles */
 
 .nav-link.active {
   color: #667eea;
@@ -250,7 +267,7 @@
 }
 
 .profile-btn:hover {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .profile-avatar {
@@ -264,17 +281,38 @@
   color: white;
   font-weight: 600;
   font-size: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .profile-name {
-  color: #2c3e50;
+  color: white;
   font-weight: 500;
   font-size: 0.95rem;
 }
 
 .dropdown-arrow {
   transition: transform 0.3s ease;
-  color: #6c757d;
+  color: white;
 }
 
 .dropdown-arrow.open {

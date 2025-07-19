@@ -200,7 +200,7 @@ const Dashboard = ({ user: initialUser, onUserUpdate, onLogout }) => {
       {/* Top Navigation */}
       <nav className="top-nav">
         <div className="nav-left">
-          <h1 className="nav-logo">BlogSpace</h1>
+          <h1 className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>BlogSpace</h1>
         </div>
 
         <div className="nav-center">
@@ -233,7 +233,23 @@ const Dashboard = ({ user: initialUser, onUserUpdate, onLogout }) => {
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <div className="profile-avatar">
-                {user?.first_name ? user.first_name.charAt(0).toUpperCase() : user?.username?.charAt(0).toUpperCase() || 'U'}
+                {user?.profile_image_url ? (
+                  <img
+                    src={user.profile_image_url}
+                    alt={`${user.username || 'User'}'s profile`}
+                    className="profile-image"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div
+                  className="profile-image-placeholder"
+                  style={{ display: user?.profile_image_url ? 'none' : 'flex' }}
+                >
+                  {user?.first_name ? user.first_name.charAt(0).toUpperCase() : user?.username?.charAt(0).toUpperCase() || 'U'}
+                </div>
               </div>
               <span className="profile-name">
                 {user?.first_name || user?.username || 'User'}
