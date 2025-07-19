@@ -5,6 +5,8 @@ import WelcomePage from './components/WelcomePage';
 import BlogList from './components/BlogList';
 import AuthContainer from './components/AuthContainer';
 import Dashboard from './components/Dashboard';
+import PublicUserProfile from './components/PublicUserProfile';
+import UserProfile from './components/UserProfile';
 import GoogleCallback from './components/GoogleCallback';
 import HealthCheck from './components/HealthCheck';
 import TestComponent from './components/TestComponent';
@@ -132,6 +134,18 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <Dashboard user={user} onUserUpdate={handleUserUpdate} onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/:username"
+            element={<PublicUserProfile />}
+          />
+          <Route
+            path="/my-profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile user={user} onUserUpdate={handleUserUpdate} />
               </ProtectedRoute>
             }
           />

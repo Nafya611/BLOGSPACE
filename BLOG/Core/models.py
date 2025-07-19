@@ -32,6 +32,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=255,unique=True)
     password = models.CharField(max_length=100)
+    profile_image = models.URLField(max_length=500, blank=True, null=True)  # Cloudinary URL for profile image
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view,renderer_classes,permission_classes,authentication_classes
 from rest_framework import status
 from rest_framework.response import Response
@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
 from rest_framework.settings import api_settings
 from django.contrib.auth import authenticate
+from Core.models import User
 
 
 # Create your views here.
@@ -49,12 +50,12 @@ def create_token(request):
 
 
 @extend_schema(
-    methods=['PUT'],
+    methods=['GET', 'PUT', 'PATCH'],
     request=UserSerializer,
     responses=UserSerializer
 
 )
-@api_view(['GET','PUT'])
+@api_view(['GET','PUT','PATCH'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def manage_user(request):
@@ -62,12 +63,40 @@ def manage_user(request):
     if request.method =='GET':
         serializer= UserSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
-    elif request.method == 'PUT':
+    elif request.method in ['PUT', 'PATCH']:
         serializer= UserSerializer(request.user,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    methods=['POST'],
+    request={
+        'type': 'object',
+        'properties': {
+            'profile_image': {
+                'type': 'string',
+                'format': 'binary'
+            }
+        }
+    },
+    responses={200: UserSerializer}
+)
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def upload_profile_image(request):
+    """Upload or update user profile image"""
+    if 'profile_image' not in request.FILES:
+        return Response({'error': 'No profile image provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = UserSerializer(request.user, data={'profile_image': request.FILES['profile_image']}, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -87,6 +116,22 @@ def logout_user(request):
         return Response({'detail':"successfully logged out"},status=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         return Response({'detail':"Invalid token"},status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    methods=['GET'],
+    responses=UserSerializer,
+    description="Get user profile by username"
+)
+@api_view(['GET'])
+def get_user_profile(request, username):
+    """Get user profile by username"""
+    try:
+        user = get_object_or_404(User, username=username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 

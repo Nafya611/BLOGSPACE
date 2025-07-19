@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
 
   // User endpoints
   USERS: '/api/user/',
+  USER_PROFILE_BY_USERNAME: (username) => `/api/user/profile/${username}/`,
 
   // Admin endpoints
   ADMIN_POSTS: '/api/Post/admin/posts/',

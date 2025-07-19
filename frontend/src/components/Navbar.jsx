@@ -32,8 +32,39 @@ const Navbar = ({ user, onLogout }) => {
               >
                 Dashboard
               </button>
+              <button
+                onClick={() => navigate('/my-profile')}
+                className={`nav-link ${isActiveRoute('/my-profile') ? 'active' : ''}`}
+              >
+                My Profile
+              </button>
               <div className="user-section">
-                <span className="user-greeting">Hello, {user.username}!</span>
+                <div className="user-profile-section">
+                  <div
+                    className="user-profile-container"
+                    onClick={() => navigate(`/profile/${user.username}`)}
+                    title={`View ${user.username}'s profile`}
+                  >
+                    {user.profile_image_url ? (
+                      <img
+                        src={user.profile_image_url}
+                        alt={`${user.username}'s profile`}
+                        className="navbar-profile-image"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className="navbar-profile-placeholder"
+                      style={{ display: user.profile_image_url ? 'none' : 'flex' }}
+                    >
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="user-greeting">Hello, {user.username}!</span>
+                  </div>
+                </div>
                 <button onClick={onLogout} className="nav-link logout">
                   Logout
                 </button>

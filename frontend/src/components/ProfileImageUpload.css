@@ -1,0 +1,107 @@
+/* ProfileImageUpload.css */
+
+.profile-image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  background: #fafafa;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.current-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #e0e0e0;
+}
+
+.profile-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-placeholder {
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.upload-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.upload-btn {
+  background: #4f6d7a;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  border: none;
+  text-decoration: none;
+}
+
+.upload-btn:hover:not(:disabled) {
+  background: #3a5460;
+}
+
+.upload-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 0.5rem;
+  background: #ffebee;
+  border-radius: 6px;
+  border: 1px solid #ffcdd2;
+  width: 100%;
+}
+
+.success-message {
+  color: #2e7d32;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 0.5rem;
+  background: #e8f5e8;
+  border-radius: 6px;
+  border: 1px solid #c8e6c9;
+  width: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .profile-image-upload {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .current-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .upload-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}

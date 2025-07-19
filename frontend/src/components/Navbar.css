@@ -88,11 +88,60 @@
   gap: 1rem;
 }
 
+.user-profile-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.user-profile-container:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-profile-image,
+.navbar-profile-placeholder {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.navbar-profile-image {
+  object-fit: cover;
+}
+
+.navbar-profile-placeholder {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.user-profile-container:hover .navbar-profile-image,
+.user-profile-container:hover .navbar-profile-placeholder {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
 .user-greeting {
   color: #ecf0f1;
   font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.5rem 0;
 }
 
 /* Responsive Design */
@@ -116,6 +165,15 @@
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
+  }
+
+  .user-profile-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .user-greeting {
+    font-size: 0.8rem;
   }
 }
 

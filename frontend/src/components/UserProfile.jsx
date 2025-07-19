@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authApi } from '../services/authApi';
+import ProfileImageUpload from './ProfileImageUpload';
 import './UserProfile.css';
 
 const UserProfile = ({ user, onUserUpdate }) => {
@@ -86,6 +87,15 @@ const UserProfile = ({ user, onUserUpdate }) => {
     }
   };
 
+  const handleImageUpdate = (newImageUrl) => {
+    if (onUserUpdate) {
+      onUserUpdate({
+        ...user,
+        profile_image_url: newImageUrl
+      });
+    }
+  };
+
   return (
     <div className="user-profile">
       <div className="profile-header">
@@ -102,6 +112,15 @@ const UserProfile = ({ user, onUserUpdate }) => {
 
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
+
+      {/* Profile Image Section */}
+      <div className="profile-image-section">
+        <h3>Profile Image</h3>
+        <ProfileImageUpload
+          currentImageUrl={user?.profile_image_url}
+          onImageUpdate={handleImageUpdate}
+        />
+      </div>
 
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="form-group">

@@ -84,6 +84,20 @@
   font-weight: 600;
 }
 
+.clickable-author {
+  color: #3498db;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.clickable-author:hover {
+  color: #2980b9;
+  background-color: rgba(52, 152, 219, 0.1);
+  text-decoration: underline;
+}
+
 .post-excerpt {
   color: #555;
   line-height: 1.6;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { blogApi } from '../services/blogApi';
 import EditPost from './EditPost';
 import BlogDetail from './BlogDetail';
@@ -7,6 +8,7 @@ import './BlogList.css';
 
 
 const BlogList = ({ refreshTrigger, user }) => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -189,6 +191,11 @@ const BlogList = ({ refreshTrigger, user }) => {
 
   const handleViewPost = (post) => {
     setViewingPost(post);
+  };
+
+  const handleAuthorClick = (e, authorUsername) => {
+    e.stopPropagation(); // Prevent the post card click event
+    navigate(`/profile/${authorUsername}`);
   };
 
   const handleBackToList = () => {
@@ -381,7 +388,13 @@ const BlogList = ({ refreshTrigger, user }) => {
                         {post.created_at && new Date(post.created_at).toLocaleDateString()}
                       </span>
                       {post.author && post.author.username && (
-                        <span className="post-author">by {post.author.username}</span>
+                        <span
+                          className="post-author clickable-author"
+                          onClick={(e) => handleAuthorClick(e, post.author.username)}
+                          title={`View ${post.author.username}'s profile`}
+                        >
+                          by {post.author.username}
+                        </span>
                       )}
                     </div>
                   </div>

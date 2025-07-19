@@ -72,6 +72,17 @@ export const authApi = {
     }
   },
 
+  // Get user profile by username
+  async getUserProfileByUsername(username) {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.USER_PROFILE_BY_USERNAME(username));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user profile by username:', error);
+      throw error;
+    }
+  },
+
   // Check if user is logged in
   isLoggedIn() {
     return !!localStorage.getItem('authToken');
