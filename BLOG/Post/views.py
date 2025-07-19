@@ -181,17 +181,14 @@ def get_Post_category_slug(request,slug):
 
 )
 @api_view(['GET'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
 def read_comments(request,slug):
     try:
         post=Post.objects.get(slug=slug)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"},status=status.HTTP_404_NOT_FOUND)
-    post=Post.objects.get(slug=slug)
 
-    # Return all comments without pagination
-    comment=Comment.objects.filter(post=post).order_by('-created_at')
+    # Return only top-level comments (parent=None), show all approved comments
+    comment=Comment.objects.filter(post=post, parent=None, is_approved=True).order_by('-created_at')
     serializer=CommentSerializer(comment,many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -213,7 +210,17 @@ def send_comment(request,slug):
 
     serializer=CommentSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(post=post, author=request.user)
+        parent_id = serializer.validated_data.get('parent_id')
+        parent_comment = None
+
+        if parent_id:
+            try:
+                parent_comment = Comment.objects.get(id=parent_id, post=post)
+            except Comment.DoesNotExist:
+                return Response({"error": "Parent comment not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Auto-approve comments from authenticated users
+        comment = serializer.save(post=post, author=request.user, parent=parent_comment, is_approved=True)
         return Response(serializer.data,status=status.HTTP_201_CREATED)
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 

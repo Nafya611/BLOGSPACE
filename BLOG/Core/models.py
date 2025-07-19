@@ -88,11 +88,12 @@ class Post(models.Model):
 class Comment(models.Model):
     post=models.ForeignKey(Post,on_delete=models.CASCADE)
     author=models.ForeignKey(User,on_delete=models.CASCADE)
+    parent=models.ForeignKey('self',on_delete=models.CASCADE,null=True,blank=True,related_name='replies')
     name=models.CharField(max_length=100,blank=True,null=True)
     email=models.EmailField(blank=True,null=True)
     content=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
-    is_approved=models.BooleanField(default=False)
+    is_approved=models.BooleanField(default=True)  # Comments approved by default
 
     def __str__(self):
         return self.content

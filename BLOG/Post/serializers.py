@@ -48,14 +48,22 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
+    replies = serializers.SerializerMethodField()
+    parent_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+
     class Meta:
         model=Comment
-        fields=['id','content','created_at','is_approved','author']
-        read_only_fields = ['id','created_at','is_approved','author']
+        fields=['id','content','created_at','is_approved','author','parent_id','replies']
+        read_only_fields = ['id','created_at','is_approved','author','replies']
+
+    def get_replies(self, obj):
+        if obj.replies.exists():
+            return CommentSerializer(obj.replies.filter(is_approved=True).order_by('created_at'), many=True).data
+        return []
 
 class PostSerializer(serializers.ModelSerializer):
-    tag = TagSerializer(many=True, required=False)
-    category = CategorySerializer(required=False)
+    tag = TagSerializer(many=True, required=False)  # Allow raw data, validate in create()
+    category = CategorySerializer(required=False)   # Allow raw data, validate in create()
     author = UserSerializer(read_only=True)
     image = serializers.ImageField(write_only=True, required=False)  # For uploads
     image_url = serializers.URLField(source='image', read_only=True)  # For display
@@ -83,23 +91,32 @@ class PostSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         """Convert incoming data, handling JSON strings from FormData"""
+        print(f"DEBUG: Received data keys: {list(data.keys()) if hasattr(data, 'keys') else 'not dict-like'}")
+
         # Make a mutable copy of the data
         if hasattr(data, '_mutable'):
             data._mutable = True
 
         # Handle JSON strings for category and tag when sent via FormData
         if 'category' in data and isinstance(data['category'], str):
+            print(f"DEBUG: Found category string: {repr(data['category'])}")
             try:
                 data['category'] = json.loads(data['category'])
+                print(f"DEBUG: Parsed category: {data['category']}")
             except (json.JSONDecodeError, TypeError):
+                print(f"DEBUG: Failed to parse category as JSON, keeping as string")
                 pass  # Keep as string if not valid JSON
 
         if 'tag' in data and isinstance(data['tag'], str):
+            print(f"DEBUG: Found tag string: {repr(data['tag'])}")
             try:
                 data['tag'] = json.loads(data['tag'])
+                print(f"DEBUG: Parsed tag: {data['tag']}")
             except (json.JSONDecodeError, TypeError):
+                print(f"DEBUG: Failed to parse tag as JSON, keeping as string")
                 pass  # Keep as string if not valid JSON
 
+        print(f"DEBUG: Final data for validation - category: {data.get('category', 'NOT_FOUND')}, tag: {data.get('tag', 'NOT_FOUND')}")
         return super().to_internal_value(data)
 
     def _upload_to_cloudinary(self, image_file):
@@ -129,12 +146,22 @@ class PostSerializer(serializers.ModelSerializer):
         auth_user = self.context['request'].user
         if not tags:
             return
-        for tag in tags:
-            tag_obj, _ = Tag.objects.get_or_create(user=auth_user, **tag)
-            post.tag.add(tag_obj)  # use `post.tag` (not post.tags)
+        for tag_data in tags:
+            # Create tag with proper slug if not provided
+            if 'slug' not in tag_data and 'name' in tag_data:
+                tag_data['slug'] = slugify(tag_data['name'])
+
+            tag_obj, created = Tag.objects.get_or_create(
+                user=auth_user,
+                name=tag_data['name'],
+                defaults={'slug': tag_data.get('slug', slugify(tag_data['name']))}
+            )
+            post.tag.add(tag_obj)
 
 
     def create(self, validated_data):
+        print(f"DEBUG: create() method called with validated_data keys: {list(validated_data.keys())}")
+
         user = self.context['request'].user
         title = validated_data.get('title')
         slug = slugify(title)
@@ -160,6 +187,14 @@ class PostSerializer(serializers.ModelSerializer):
             except json.JSONDecodeError:
                 categories = None
 
+        print(f"DEBUG: Processed data - categories: {categories}, tags: {tags}")
+
+        # Validate that category and tags are provided (since we made them optional for serializer validation)
+        if not categories:
+            raise serializers.ValidationError({"category": "This field is required."})
+        if not tags:
+            raise serializers.ValidationError({"tag": "This field is required."})
+
         # Ensure uniqueness of slug
         original_slug = slug
         counter = 1
@@ -181,12 +216,22 @@ class PostSerializer(serializers.ModelSerializer):
 
         # Handle category (single ForeignKey)
         if categories:
-            category_obj, _ = Category.objects.get_or_create(user=user, **categories)
+            # Create category with proper slug if not provided
+            if 'slug' not in categories and 'name' in categories:
+                categories['slug'] = slugify(categories['name'])
+
+            category_obj, created = Category.objects.get_or_create(
+                user=user,
+                name=categories['name'],
+                defaults={'slug': categories.get('slug', slugify(categories['name']))}
+            )
             post.category = category_obj
             post.save()
+            print(f"DEBUG: Category assigned: {category_obj}")
 
         # handle tags
         self._get_or_create_tags(tags, post)
+        print(f"DEBUG: Tags assigned: {list(post.tag.all())}")
 
         return post
 
