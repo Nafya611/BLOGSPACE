@@ -8,7 +8,8 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
     category: '',
     tag: [],
     status: 'draft', // draft or published
-    image: null
+    image: null,
+    video: null
   });
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
@@ -111,10 +112,12 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
     try {
       let response;
 
-      // Check if we have an image to upload
+      // Check if we have an image or video to upload
       const hasImage = formData.image && formData.image instanceof File;
+      const hasVideo = formData.video && formData.video instanceof File;
+      const hasMedia = hasImage || hasVideo;
 
-      if (hasImage) {
+      if (hasMedia) {
         // Use FormData for file upload
         const formDataToSend = new FormData();
 
@@ -124,8 +127,15 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         formDataToSend.append('is_published', formData.status === 'published');
         formDataToSend.append('is_draft', formData.status === 'draft');
 
-        // Add image
-        formDataToSend.append('image', formData.image);
+        // Add image if present
+        if (hasImage) {
+          formDataToSend.append('image', formData.image);
+        }
+
+        // Add video if present
+        if (hasVideo) {
+          formDataToSend.append('video', formData.video);
+        }
 
         // Add category if selected (as JSON string for FormData)
         if (formData.category) {
@@ -155,7 +165,7 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
           }
         }
 
-        console.log('Sending FormData with image');
+        console.log('Sending FormData with media files');
         response = await blogApi.createPost(formDataToSend);
 
       } else {
@@ -208,7 +218,8 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         category: '',
         tag: [],
         status: 'draft',
-        image: null
+        image: null,
+        video: null
       });
 
       // Call parent callback
@@ -354,6 +365,29 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
         </div>
 
         <div className="form-group">
+          <label htmlFor="video">Featured Video</label>
+          <input
+            type="file"
+            id="video"
+            name="video"
+            onChange={handleChange}
+            accept="video/*"
+          />
+          {formData.video && (
+            <div className="video-preview">
+              <video
+                src={URL.createObjectURL(formData.video)}
+                controls
+                style={{ maxWidth: '300px', maxHeight: '200px', marginTop: '10px' }}
+              />
+              <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+                Video: {formData.video.name} ({(formData.video.size / 1024 / 1024).toFixed(2)} MB)
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="form-group">
           <label>Tags</label>
           <div className="tags-section">
             <div className="existing-tags">
@@ -406,7 +440,8 @@ const CreatePost = ({ onPostCreated, onCancel }) => {
                 category: '',
                 tag: [],
                 status: 'draft',
-                image: null
+                image: null,
+                video: null
               });
               setError('');
               setSuccess('');

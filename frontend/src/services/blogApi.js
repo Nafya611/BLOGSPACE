@@ -28,7 +28,18 @@ export const blogApi = {
 
   async createPost(postData) {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.CREATE_POST, postData);
+      // Check if postData contains video file for longer timeout
+      const hasVideo = postData instanceof FormData &&
+                      postData.has('video') &&
+                      postData.get('video') &&
+                      postData.get('video').size > 0;
+
+      // Use longer timeout for video uploads (10 minutes)
+      const config = hasVideo ? { timeout: 600000 } : {};
+
+      console.log('Creating post with', hasVideo ? 'video (10min timeout)' : 'standard timeout');
+
+      const response = await apiClient.post(API_ENDPOINTS.CREATE_POST, postData, config);
       return response.data;
     } catch (error) {
       console.error('Error creating post:', error);
@@ -38,7 +49,18 @@ export const blogApi = {
 
   async updatePost(slug, postData) {
     try {
-      const response = await apiClient.patch(API_ENDPOINTS.POST_DETAIL(slug), postData);
+      // Check if postData contains video file for longer timeout
+      const hasVideo = postData instanceof FormData &&
+                      postData.has('video') &&
+                      postData.get('video') &&
+                      postData.get('video').size > 0;
+
+      // Use longer timeout for video uploads (10 minutes)
+      const config = hasVideo ? { timeout: 600000 } : {};
+
+      console.log('Updating post with', hasVideo ? 'video (10min timeout)' : 'standard timeout');
+
+      const response = await apiClient.patch(API_ENDPOINTS.POST_DETAIL(slug), postData, config);
       return response.data;
     } catch (error) {
       console.error(`Error updating post ${slug}:`, error);

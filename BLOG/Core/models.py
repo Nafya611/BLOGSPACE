@@ -77,6 +77,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     content=models.TextField()
     image=models.URLField(max_length=500, blank=True, null=True)  # Changed to URLField for Cloudinary URLs
+    video=models.URLField(max_length=500, blank=True, null=True)  # Added video field for Cloudinary video URLs
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     published_at=models.DateTimeField(auto_now_add=True)
