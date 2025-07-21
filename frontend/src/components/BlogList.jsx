@@ -379,6 +379,26 @@ const BlogList = ({ refreshTrigger, user }) => {
                       />
                     </div>
                   )}
+
+                  {post.video_url && (
+                    <div className="post-video">
+                      <video
+                        src={post.video_url}
+                        className="post-video-player"
+                        controls
+                        preload="metadata"
+                        onError={(e) => {
+                          console.error('Failed to load video:', post.video_url);
+                          e.target.style.display = 'none';
+                        }}
+                        onLoadedMetadata={() => {
+                          console.log('Video loaded successfully:', post.video_url);
+                        }}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  )}
                   <div className="post-header">
                     <h3>{post.title || 'Untitled'}</h3>
 

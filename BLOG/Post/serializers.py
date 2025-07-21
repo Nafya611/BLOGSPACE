@@ -62,8 +62,8 @@ class CommentSerializer(serializers.ModelSerializer):
         return []
 
 class PostSerializer(serializers.ModelSerializer):
-    tag = serializers.ListField(required=False, allow_empty=True)  # Accept raw data
-    category = serializers.DictField(required=False, allow_null=True)  # Accept raw data
+    tag = serializers.SerializerMethodField()  # Use SerializerMethodField for reading
+    category = serializers.SerializerMethodField()  # Use SerializerMethodField for reading
     author = UserSerializer(read_only=True)
     image = serializers.ImageField(write_only=True, required=False)  # For uploads
     image_url = serializers.URLField(source='image', read_only=True)  # For display
@@ -75,6 +75,16 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [ 'title', 'slug', 'content', 'image', 'image_url', 'video', 'video_url', 'tag', 'category', 'author','created_at', 'updated_at','is_published', 'is_draft']
         read_only_fields = [ 'author','slug', 'created_at', 'updated_at', 'image_url', 'video_url']
 
+    def get_tag(self, obj):
+        """Return serialized tags"""
+        return TagSerializer(obj.tag.all(), many=True).data
+
+    def get_category(self, obj):
+        """Return serialized category"""
+        if obj.category:
+            return CategorySerializer(obj.category).data
+        return None
+
     def to_representation(self, instance):
         """Convert model instance to representation, handling Cloudinary image and video URLs"""
         data = super().to_representation(instance)
@@ -83,19 +93,7 @@ class PostSerializer(serializers.ModelSerializer):
         data.pop('image', None)
         data.pop('video', None)
 
-        # Use nested serializers for reading
-        if instance.category:
-            data['category'] = CategorySerializer(instance.category).data
-        else:
-            data['category'] = None
-
-        # Fix for ManyRelatedManager iteration issue
-        tags = instance.tag.all()
-        if tags:
-            data['tag'] = TagSerializer(tags, many=True).data
-        else:
-            data['tag'] = []
-
+        # Tags and category are handled by SerializerMethodFields
         # The image_url and video_url fields will be automatically populated from the URLFields
         return data
 
@@ -123,29 +121,33 @@ class PostSerializer(serializers.ModelSerializer):
             try:
                 self._parsed_category = json.loads(data['category'])
                 print(f"DEBUG: Parsed category: {self._parsed_category}")
-                # Remove from data to avoid validation errors
-                data.pop('category', None)
             except (json.JSONDecodeError, TypeError):
                 print(f"DEBUG: Failed to parse category as JSON, keeping as string")
                 pass  # Keep as string if not valid JSON
+
+        # Always remove category from data since it's read-only now
+        data.pop('category', None)
 
         if 'tag' in data and isinstance(data['tag'], str):
             print(f"DEBUG: Found tag string: {repr(data['tag'])}")
             try:
                 self._parsed_tags = json.loads(data['tag'])
                 print(f"DEBUG: Parsed tag: {self._parsed_tags}")
-                # Remove from data to avoid validation errors
-                data.pop('tag', None)
             except (json.JSONDecodeError, TypeError):
                 print(f"DEBUG: Failed to parse tag as JSON, keeping as string")
                 pass  # Keep as string if not valid JSON
 
+        # Always remove tag from data since it's read-only now
+        data.pop('tag', None)
+
         # If category and tag are already parsed objects, store them
         if 'category' in data and isinstance(data['category'], dict):
-            self._parsed_category = data.pop('category')
+            self._parsed_category = data['category']
+            data.pop('category', None)
 
         if 'tag' in data and isinstance(data['tag'], list):
-            self._parsed_tags = data.pop('tag')
+            self._parsed_tags = data['tag']
+            data.pop('tag', None)
 
         print(f"DEBUG: Stored - category: {self._parsed_category}, tag: {self._parsed_tags}")
         return super().to_internal_value(data)

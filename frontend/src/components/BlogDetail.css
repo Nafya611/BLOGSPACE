@@ -98,6 +98,19 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.blog-detail-video {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.blog-detail-video-player {
+  max-width: 100%;
+  height: auto;
+  min-height: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
 .blog-detail-header-content h1 {
   color: #2c3e50;
   margin: 0 0 1.5rem 0;

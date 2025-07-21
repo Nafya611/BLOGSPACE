@@ -110,6 +110,26 @@ const BlogDetail = ({ post, onBack, onEdit, onDelete, user }) => {
           </div>
         )}
 
+        {fullPost.video_url && (
+          <div className="blog-detail-video">
+            <video
+              src={fullPost.video_url}
+              className="blog-detail-video-player"
+              controls
+              preload="metadata"
+              onError={(e) => {
+                console.error('Failed to load video:', fullPost.video_url);
+                e.target.style.display = 'none';
+              }}
+              onLoadedMetadata={() => {
+                console.log('Video loaded successfully:', fullPost.video_url);
+              }}
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+
         <header className="blog-detail-header-content">
           <h1>{fullPost.title || 'Untitled'}</h1>
 
