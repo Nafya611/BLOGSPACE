@@ -5,22 +5,25 @@
   align-items: center;
   min-height: 80vh;
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 .auth-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
   padding: 2.5rem;
   width: 100%;
   max-width: 500px;
-  border: 1px solid #e1e8ed;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .auth-card h2 {
   text-align: center;
-  color: #2c3e50;
+  color: var(--text-primary);
   margin-bottom: 2rem;
   font-size: 1.8rem;
   font-weight: 600;
@@ -46,33 +49,34 @@
 
 .form-group label {
   font-weight: 600;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .form-group input {
   padding: 0.75rem 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #fafafa;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #3498db;
-  background-color: white;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--link-color);
+  background-color: var(--input-bg);
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.1);
 }
 
 .form-group input:hover {
-  border-color: #cbd5e0;
+  border-color: var(--text-muted);
 }
 
 .auth-button {
   background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
+  color: var(--navbar-text);
   border: none;
   padding: 1rem 2rem;
   border-radius: 8px;
@@ -101,18 +105,18 @@
   text-align: center;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
 }
 
 .auth-switch p {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .link-button {
   background: none;
   border: none;
-  color: #3498db;
+  color: var(--link-color);
   cursor: pointer;
   text-decoration: underline;
   font-weight: 600;
@@ -121,12 +125,12 @@
 }
 
 .link-button:hover {
-  color: #2980b9;
+  color: var(--link-hover);
 }
 
 .error-message {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: rgba(254, 226, 226, 0.9);
+  color: #991b1b;
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid #fecaca;
@@ -135,29 +139,42 @@
 }
 
 .success-message {
-  background-color: #d1fae5;
-  color: #059669;
+  background-color: rgba(209, 250, 229, 0.9);
+  color: #047857;
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid #a7f3d0;
   font-size: 0.9rem;
 }
 
+/* Dark mode specific colors for messages */
+[data-theme="dark"] .error-message {
+  background-color: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+  border-color: #dc2626;
+}
+
+[data-theme="dark"] .success-message {
+  background-color: rgba(5, 150, 105, 0.2);
+  color: #86efac;
+  border-color: #059669;
+}
+
 .user-info {
-  background-color: #f8f9fa;
+  background-color: var(--bg-tertiary);
   padding: 1.5rem;
   border-radius: 8px;
   margin: 1.5rem 0;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-color);
 }
 
 .user-info p {
   margin: 0.5rem 0;
-  color: #495057;
+  color: var(--text-secondary);
 }
 
 .user-info strong {
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 .logout-button {

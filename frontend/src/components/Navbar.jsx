@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 import './Navbar.css';
 
 const Navbar = ({ user, onLogout }) => {
@@ -38,6 +39,7 @@ const Navbar = ({ user, onLogout }) => {
               >
                 My Profile
               </button>
+              <ThemeToggle />
               <div className="user-section">
                 <div className="user-profile-section">
                   <div
@@ -71,12 +73,15 @@ const Navbar = ({ user, onLogout }) => {
               </div>
             </>
           ) : (
-            <button
-              onClick={() => navigate('/login')}
-              className={`nav-link ${isActiveRoute('/login') ? 'active' : ''}`}
-            >
-              Login/Signup
-            </button>
+            <>
+              <button
+                onClick={() => navigate('/login')}
+                className={`nav-link ${isActiveRoute('/login') ? 'active' : ''}`}
+              >
+                Login/Signup
+              </button>
+              <ThemeToggle />
+            </>
           )}
         </div>
       </div>

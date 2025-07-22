@@ -2,10 +2,12 @@
 .user-profile {
   max-width: 600px;
   margin: 0 auto;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .profile-header {
@@ -17,7 +19,7 @@
 
 .profile-header h2 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 1.8rem;
   font-weight: 600;
 }
@@ -25,7 +27,7 @@
 .edit-profile-btn,
 .save-btn,
 .cancel-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--gradient-primary);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -83,7 +85,7 @@
 
 .form-group label {
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
@@ -93,7 +95,8 @@
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: white;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .form-group input:focus {
@@ -103,8 +106,8 @@
 }
 
 .form-group input:disabled {
-  background: #f8f9fa;
-  color: #6c757d;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
@@ -118,7 +121,7 @@
 
 .error-message {
   background: #f8d7da;
-  color: #721c24;
+  color: var(--text-primary);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   border: 1px solid #f5c6cb;
@@ -129,7 +132,7 @@
 
 .success-message {
   background: #d4edda;
-  color: #155724;
+  color: var(--text-primary);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   border: 1px solid #c3e6cb;
@@ -148,7 +151,7 @@
 
 .profile-image-section h3 {
   margin: 0 0 1rem 0;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 1.2rem;
   text-align: center;
 }

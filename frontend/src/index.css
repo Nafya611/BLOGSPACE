@@ -2,34 +2,234 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light;
-  color: #333;
-  background-color: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Light theme variables */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #f8f9fa;
+  --text-primary: #000000;
+  --text-secondary: #2d2d2d;
+  --text-muted: #555555;
+  --border-color: #e0e0e0;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-dark: rgba(0, 0, 0, 0.25);
+  --gradient-bg: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  --gradient-primary: linear-gradient(135deg, #667eea, #764ba2);
+  --gradient-navbar: linear-gradient(135deg, #2c3e50, #34495e);
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --navbar-text: #ffffff;
+  --link-color: #646cff;
+  --link-hover: #535bf2;
+
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --bg-primary: #0f1419;
+  --bg-secondary: #1a1f2e;
+  --bg-tertiary: #242938;
+  --text-primary: #ffffff;
+  --text-secondary: #f0f0f0;
+  --text-muted: #d0d0d0;
+  --border-color: #2d3748;
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
+  --shadow-dark: rgba(0, 0, 0, 0.6);
+  --gradient-bg: linear-gradient(135deg, #1a1f2e, #2d3748);
+  --gradient-primary: linear-gradient(135deg, #4c51bf, #667eea);
+  --gradient-navbar: linear-gradient(135deg, #1a202c, #2d3748);
+  --card-bg: #1a1f2e;
+  --input-bg: #2d3748;
+  --navbar-text: #ffffff;
+  --link-color: #90cdf4;
+  --link-hover: #63b3ed;
+
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Ensure all text elements use CSS variables in dark mode */
+[data-theme="dark"] * {
+  color: inherit;
+}
+
+/* Specific contrast rules for light backgrounds */
+.tag-checkbox,
+.form-group input,
+.form-group textarea,
+.form-group select {
+  color: var(--text-primary) !important;
+}
+
+/* Light background elements should always have dark text */
+[data-theme="light"] .tag-checkbox,
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group textarea,
+[data-theme="light"] .form-group select {
+  color: #1a1a1a !important;
+}
+
+/* Force dark text in light theme for better contrast */
+[data-theme="light"] .tag-checkbox,
+[data-theme="light"] .tag-label,
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select,
+[data-theme="light"] .add-tag input,
+[data-theme="light"] label {
+  color: #1a1a1a !important;
+}
+
+/* Force light text in dark theme for better contrast */
+[data-theme="dark"] .tag-checkbox,
+[data-theme="dark"] .tag-label,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] .add-tag input,
+[data-theme="dark"] label {
+  color: #ffffff !important;
+}
+
+/* AGGRESSIVE CONTRAST FIXES */
+/* Light theme - force dark text on light backgrounds */
+body:not([data-theme="dark"]) .tag-checkbox,
+body:not([data-theme="dark"]) .tag-label,
+body:not([data-theme="dark"]) input[type="text"],
+body:not([data-theme="dark"]) textarea,
+body:not([data-theme="dark"]) select,
+body:not([data-theme="dark"]) label,
+body:not([data-theme="dark"]) .form-group label,
+body:not([data-theme="dark"]) .add-tag input {
+  color: #000000 !important;
+}
+
+/* Dark theme - force light text on dark backgrounds */
+[data-theme="dark"] .tag-checkbox,
+[data-theme="dark"] .tag-label,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] label,
+[data-theme="dark"] .form-group label,
+[data-theme="dark"] .add-tag input {
+  color: #ffffff !important;
+}
+
+/* ULTIMATE CONTRAST ENFORCEMENT */
+/* For any light backgrounds, use dark text */
+.tag-checkbox,
+.tag-label,
+input,
+textarea,
+select,
+label {
+  color: var(--text-primary) !important;
+}
+
+/* Override any conflicting styles */
+* {
+  color: inherit;
+}
+
+/* Ensure proper inheritance */
+body {
+  color: var(--text-primary);
+}
+
+/* Placeholder text contrast */
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Select and option elements contrast */
+select {
+  color: var(--text-primary) !important;
+  background-color: var(--input-bg) !important;
+}
+
+select option {
+  background-color: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Ensure dropdown menus have proper contrast */
+.dropdown-menu {
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.dropdown-item {
+  color: var(--text-primary) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Tag elements and similar components */
+.tag-checkbox,
+.tag-label {
+  color: var(--text-primary) !important;
+}
+
+/* Form groups and labels */
+.form-group label {
+  color: var(--text-secondary) !important;
+}
+
+/* Any remaining hardcoded colors for better contrast */
+[data-theme="light"] {
+  color: #1a1a1a;
+}
+
+[data-theme="dark"] {
+  color: #ffffff;
+}
+
+/* Text in cards and containers */
+.card,
+.container,
+.content {
+  color: var(--text-primary);
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--link-color);
   text-decoration: inherit;
+  transition: color 0.3s ease;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--link-hover);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: var(--text-primary);
 }
 
 button {
@@ -39,27 +239,97 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.3s ease;
+}
+
+/* Force proper button contrast */
+[data-theme="light"] button {
+  background-color: #333333;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] button {
+  background-color: #f0f0f0;
+  color: #000000 !important;
+}
+
+/* Specific button contrast enforcement */
+button,
+.btn,
+.button,
+[type="button"],
+[type="submit"],
+[type="reset"] {
+  color: inherit !important;
+}
+
+/* Light theme button contrast */
+[data-theme="light"] button:not(.nav-link):not(.theme-toggle),
+[data-theme="light"] .btn,
+[data-theme="light"] .button,
+[data-theme="light"] [type="button"],
+[data-theme="light"] [type="submit"],
+[data-theme="light"] [type="reset"] {
+  color: #ffffff !important;
+}
+
+/* Dark theme button contrast */
+[data-theme="dark"] button:not(.nav-link):not(.theme-toggle),
+[data-theme="dark"] .btn,
+[data-theme="dark"] .button,
+[data-theme="dark"] [type="button"],
+[data-theme="dark"] [type="submit"],
+[data-theme="dark"] [type="reset"] {
+  color: #000000 !important;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--link-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--shadow-medium);
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Form elements styling for dark mode */
+input, textarea, select {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--link-color);
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Scrollbar styling for dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }

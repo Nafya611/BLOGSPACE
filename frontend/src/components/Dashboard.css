@@ -1,9 +1,11 @@
 /* Dashboard layout styles */
 .dashboard-container {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   display: flex;
   flex-direction: column;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .dashboard-main {
@@ -22,12 +24,12 @@
 
 .loading-spinner {
   font-size: 1.2rem;
-  color: #667eea;
+  color: var(--link-color);
 }
 
 /* Dashboard Overview */
 .dashboard-overview h1 {
-  color: #2c3e50;
+  color: var(--text-primary);
   margin-bottom: 2rem;
   font-size: 2.5rem;
   font-weight: 700;
@@ -41,21 +43,24 @@
 }
 
 .stat-card {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
   text-align: center;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 30px var(--shadow-medium);
 }
 
 .stat-card h3 {
   margin: 0 0 1rem 0;
-  color: #667eea;
+  color: var(--link-color);
   font-size: 1.1rem;
   font-weight: 600;
 }
@@ -64,22 +69,25 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 .recent-activity {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .recent-activity h2 {
   margin: 0 0 1.5rem 0;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 1.8rem;
   font-weight: 600;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid var(--link-color);
   padding-bottom: 0.5rem;
 }
 
@@ -90,18 +98,21 @@
 
 /* Blogs Section */
 .blogs-section {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .blogs-section h1 {
   margin: 0 0 2rem 0;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 2rem;
   font-weight: 600;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid var(--link-color);
   padding-bottom: 0.5rem;
 }
 
@@ -111,7 +122,7 @@
 }
 
 .settings-section h1 {
-  color: #2c3e50;
+  color: var(--text-primary);
   margin-bottom: 2rem;
   font-size: 2rem;
   font-weight: 600;
@@ -124,38 +135,42 @@
 }
 
 .setting-group {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 .setting-group h3 {
   margin: 0 0 1rem 0;
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 1.3rem;
   font-weight: 600;
 }
 
 .setting-group p {
   margin: 0 0 1.5rem 0;
-  color: #6c757d;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
 .settings-btn {
-  background: #667eea;
+  background: var(--link-color);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .settings-btn:hover {
-  background: #5a67d8;
+  background: var(--link-hover);
+  transform: translateY(-1px);
 }
 
 /* Top Navigation Styles */
@@ -165,18 +180,19 @@
   left: 0;
   right: 0;
   height: 80px;
-  background: linear-gradient(135deg, #2c3e50, #34495e) !important;
-  border-bottom: 3px solid #3498db;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: var(--gradient-navbar) !important;
+  border-bottom: 3px solid var(--link-color);
+  box-shadow: 0 2px 10px var(--shadow-light);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
+  transition: all 0.3s ease;
 }
 
 .nav-left .nav-logo {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -184,6 +200,8 @@
   font-weight: 700;
   margin: 0;
   cursor: pointer;
+  color: var(--navbar-text); /* Fallback for browsers that don't support background-clip */
+}
   transition: all 0.3s ease;
 }
 
@@ -221,15 +239,15 @@
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: var(--gradient-primary);
   color: white;
 }
 
 /* Profile dropdown styles */
 
 .nav-link.active {
-  color: #667eea;
-  background: #f0f2ff;
+  color: var(--link-color);
+  background: var(--bg-tertiary);
   font-weight: 600;
 }
 
@@ -241,7 +259,7 @@
   transform: translateX(-50%);
   width: 60%;
   height: 2px;
-  background: #667eea;
+  background: var(--link-color);
   border-radius: 1px;
 }
 
@@ -301,18 +319,18 @@
   color: white;
   font-weight: 600;
   font-size: 1rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--gradient-primary);
 }
 
 .profile-name {
-  color: white;
+  color: var(--navbar-text);
   font-weight: 500;
   font-size: 0.95rem;
 }
 
 .dropdown-arrow {
   transition: transform 0.3s ease;
-  color: white;
+  color: var(--navbar-text);
 }
 
 .dropdown-arrow.open {
@@ -324,12 +342,14 @@
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px var(--shadow-dark);
   min-width: 200px;
   overflow: hidden;
   z-index: 1001;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
   border: 1px solid #e9ecef;
 }
 

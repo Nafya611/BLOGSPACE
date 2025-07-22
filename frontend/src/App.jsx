@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
 import WelcomePage from './components/WelcomePage';
 import BlogList from './components/BlogList';
@@ -15,6 +16,7 @@ import ImageTest from './components/ImageTest';
 import { authApi } from './services/authApi';
 import './components/BlogList.css';
 import './components/Dashboard.css';
+import './components/DarkModeEnhancements.css';
 import './App.css';
 
 function AppContent() {
@@ -182,9 +184,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ThemeProvider>
   );
 }
 

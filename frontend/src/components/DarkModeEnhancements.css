@@ -1,0 +1,194 @@
+/* Enhanced Dark Mode Effects */
+
+/* Search and Filter Section Enhancements */
+[data-theme="dark"] .search-filter-section {
+  background: linear-gradient(135deg, var(--card-bg), var(--bg-tertiary));
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(100, 108, 255, 0.1);
+}
+
+[data-theme="dark"] .search-input:focus,
+[data-theme="dark"] .filter-select:focus {
+  box-shadow:
+    0 0 0 3px rgba(100, 108, 255, 0.3),
+    0 0 20px rgba(100, 108, 255, 0.1);
+}
+
+[data-theme="dark"] .clear-filters-btn:hover {
+  box-shadow:
+    0 4px 20px rgba(100, 108, 255, 0.4),
+    0 0 30px rgba(100, 108, 255, 0.2);
+}
+
+/* Dashboard Stat Cards Enhancement */
+[data-theme="dark"] .stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(100, 108, 255, 0.1),
+    transparent
+  );
+  transition: left 0.6s;
+}
+
+[data-theme="dark"] .stat-card:hover::before {
+  left: 100%;
+}
+
+[data-theme="dark"] .stat-card:hover {
+  box-shadow:
+    0 12px 40px rgba(100, 108, 255, 0.2),
+    0 0 0 1px rgba(100, 108, 255, 0.15);
+}
+
+/* Glowing effects for dark mode */
+[data-theme="dark"] .post-card:hover {
+  box-shadow:
+    0 8px 32px rgba(100, 108, 255, 0.15),
+    0 0 0 1px rgba(100, 108, 255, 0.1);
+  transform: translateY(-4px);
+}[data-theme="dark"] .auth-card {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(100, 108, 255, 0.1);
+}
+
+[data-theme="dark"] .blog-detail {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(100, 108, 255, 0.1);
+}
+
+[data-theme="dark"] .create-post {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(100, 108, 255, 0.1);
+}
+
+/* Animated gradient for dark mode backgrounds */
+[data-theme="dark"] .welcome-container {
+  background: linear-gradient(-45deg, #1a202c, #2d3748, #4a5568, #2d3748);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhanced button hover effects for dark mode */
+[data-theme="dark"] .btn:hover,
+[data-theme="dark"] .primary-btn:hover,
+[data-theme="dark"] .nav-link:hover {
+  box-shadow:
+    0 8px 25px rgba(100, 108, 255, 0.3),
+    0 0 20px rgba(100, 108, 255, 0.2);
+}
+
+/* Subtle glow for navbar in dark mode */
+[data-theme="dark"] .navbar {
+  box-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(100, 108, 255, 0.1);
+}
+
+/* Enhanced focus states for dark mode */
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  box-shadow:
+    0 0 0 2px rgba(100, 108, 255, 0.3),
+    0 0 20px rgba(100, 108, 255, 0.1);
+}
+
+/* Dark mode scrollbar with glow */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #4a5568, #2d3748);
+  box-shadow: inset 0 0 6px rgba(100, 108, 255, 0.3);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #63b3ed, #4299e1);
+  box-shadow:
+    inset 0 0 6px rgba(100, 108, 255, 0.5),
+    0 0 10px rgba(100, 108, 255, 0.3);
+}
+
+/* Animated loading states for dark mode */
+[data-theme="dark"] .loading-spinner {
+  background: linear-gradient(45deg, #90cdf4, #63b3ed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Dark mode text selection */
+[data-theme="dark"] ::selection {
+  background-color: rgba(100, 108, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Enhanced card animations for dark mode */
+[data-theme="dark"] .post-card {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .post-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(100, 108, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+[data-theme="dark"] .post-card:hover::before {
+  left: 100%;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
+}

@@ -280,18 +280,18 @@ const BlogList = ({ refreshTrigger, user }) => {
     <div className="blog-list">
       <h2>Blog Posts</h2>
       {/* Search and filter UI */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="search-filter-section">
         <input
           type="text"
           placeholder="Search posts..."
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
-          style={{ flex: '1 1 200px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+          className="search-input"
         />
         <select
           value={selectedCategory}
           onChange={e => handleCategoryChange(e.target.value)}
-          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+          className="filter-select"
         >
           <option value="">All Categories</option>
           {categories.map(cat => (
@@ -301,7 +301,7 @@ const BlogList = ({ refreshTrigger, user }) => {
         <select
           value={selectedTag}
           onChange={e => handleTagChange(e.target.value)}
-          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
+          className="filter-select"
         >
           <option value="">All Tags</option>
           {tags.map(tag => (
@@ -311,9 +311,9 @@ const BlogList = ({ refreshTrigger, user }) => {
         {(search || selectedCategory || selectedTag) && (
           <button
             onClick={handleClearFilters}
-            style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ccc', background: '#eee' }}
+            className="clear-filters-btn"
           >
-            Clear
+            Clear Filters
           </button>
         )}
       </div>

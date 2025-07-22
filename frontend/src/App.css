@@ -2,12 +2,15 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 main {
   flex: 1;
   padding: 2rem 0;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  background: var(--gradient-bg);
   min-height: calc(100vh - 80px); /* Adjust based on navbar height */
 }
 
@@ -17,7 +20,7 @@ main {
 .secondary-btn,
 .danger-btn,
 .success-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--gradient-primary);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -40,7 +43,7 @@ main {
 .danger-btn:hover,
 .success-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 25px var(--shadow-medium);
 }
 
 .secondary-btn {
