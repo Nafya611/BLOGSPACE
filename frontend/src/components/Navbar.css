@@ -93,6 +93,20 @@
   border-color: #c0392b;
 }
 
+.nav-link.preferences-btn {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  border-color: #9b59b6;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.nav-link.preferences-btn:hover {
+  background: linear-gradient(135deg, #8e44ad, #7d3c98);
+  border-color: #8e44ad;
+  transform: translateY(-1px);
+}
+
 .user-section {
   display: flex;
   align-items: center;

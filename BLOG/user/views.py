@@ -2,14 +2,14 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view,renderer_classes,permission_classes,authentication_classes
 from rest_framework import status
 from rest_framework.response import Response
-from user.serializers import UserSerializer,AuthTokenSerializer
+from user.serializers import UserSerializer,AuthTokenSerializer,UserPreferencesSerializer,UserWithPreferencesSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
 from rest_framework.settings import api_settings
 from django.contrib.auth import authenticate
-from Core.models import User
+from Core.models import User, UserPreferences
 
 
 # Create your views here.
@@ -132,6 +132,127 @@ def get_user_profile(request, username):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@extend_schema(
+    methods=['GET', 'PUT', 'PATCH'],
+    request=UserPreferencesSerializer,
+    responses=UserPreferencesSerializer,
+    description="Get or update user preferences"
+)
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def user_preferences(request):
+    """Get or update user preferences"""
+    try:
+        # Get or create preferences for the user
+        preferences = UserPreferences.get_or_create_for_user(request.user)
+
+        if request.method == 'GET':
+            serializer = UserPreferencesSerializer(preferences)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        elif request.method in ['PUT', 'PATCH']:
+            partial = request.method == 'PATCH'
+            serializer = UserPreferencesSerializer(
+                preferences,
+                data=request.data,
+                partial=partial
+            )
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response(
+            {'detail': f'Error managing preferences: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@extend_schema(
+    methods=['POST'],
+    description="Reset user preferences to default values"
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reset_user_preferences(request):
+    """Reset user preferences to default values"""
+    try:
+        # Delete existing preferences (will be recreated with defaults)
+        UserPreferences.objects.filter(user=request.user).delete()
+
+        # Create new preferences with defaults
+        preferences = UserPreferences.get_or_create_for_user(request.user)
+        serializer = UserPreferencesSerializer(preferences)
+
+        return Response({
+            'message': 'Preferences reset to defaults successfully',
+            'preferences': serializer.data
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {'detail': f'Error resetting preferences: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@extend_schema(
+    methods=['GET'],
+    responses=UserWithPreferencesSerializer,
+    description="Get user profile with preferences"
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile_with_preferences(request):
+    """Get complete user profile including preferences"""
+    try:
+        # Ensure preferences exist
+        UserPreferences.get_or_create_for_user(request.user)
+
+        # Serialize user with preferences
+        serializer = UserWithPreferencesSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {'detail': f'Error fetching profile: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@extend_schema(
+    methods=['POST'],
+    description="Bulk update multiple preference settings"
+)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def bulk_update_preferences(request):
+    """Bulk update multiple preference settings at once"""
+    try:
+        preferences = UserPreferences.get_or_create_for_user(request.user)
+
+        # Update only the provided fields
+        for key, value in request.data.items():
+            if hasattr(preferences, key):
+                setattr(preferences, key, value)
+
+        preferences.save()
+
+        serializer = UserPreferencesSerializer(preferences)
+        return Response({
+            'message': 'Preferences updated successfully',
+            'preferences': serializer.data
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {'detail': f'Error updating preferences: {str(e)}'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 

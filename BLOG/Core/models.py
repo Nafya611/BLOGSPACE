@@ -101,4 +101,126 @@ class Comment(models.Model):
         return self.content
 
 
+class UserPreferences(models.Model):
+    """
+    Model to store user preferences like theme, language, UI settings, etc.
+    This allows preferences to be synced across devices and sessions.
+    """
+    # UI Theme Preferences
+    THEME_CHOICES = [
+        ('light', 'Light'),
+        ('dark', 'Dark'),
+        ('auto', 'Auto (System)'),
+    ]
+
+    # Language Preferences
+    LANGUAGE_CHOICES = [
+        ('en', 'English'),
+        ('es', 'Spanish'),
+        ('fr', 'French'),
+        ('de', 'German'),
+        ('it', 'Italian'),
+        ('pt', 'Portuguese'),
+        ('ru', 'Russian'),
+        ('ja', 'Japanese'),
+        ('ko', 'Korean'),
+        ('zh', 'Chinese'),
+    ]
+
+    # Font Size Preferences
+    FONT_SIZE_CHOICES = [
+        ('small', 'Small'),
+        ('medium', 'Medium'),
+        ('large', 'Large'),
+        ('extra_large', 'Extra Large'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferences')
+
+    # Theme and UI Preferences
+    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='light')
+    font_size = models.CharField(max_length=15, choices=FONT_SIZE_CHOICES, default='medium')
+    high_contrast = models.BooleanField(default=False)
+    reduce_animations = models.BooleanField(default=False)
+
+    # Language and Localization
+    language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default='en')
+    timezone = models.CharField(max_length=50, default='UTC')
+    date_format = models.CharField(max_length=20, default='MM/DD/YYYY')
+    time_format = models.CharField(max_length=10, default='12h')  # 12h or 24h
+
+    # Content and Display Preferences
+    posts_per_page = models.IntegerField(default=10)
+    show_profile_image = models.BooleanField(default=True)
+    auto_save_drafts = models.BooleanField(default=True)
+
+    # Privacy and Notification Preferences
+    show_online_status = models.BooleanField(default=True)
+    email_notifications = models.BooleanField(default=True)
+    browser_notifications = models.BooleanField(default=False)
+    marketing_emails = models.BooleanField(default=False)
+
+    # Editor Preferences
+    editor_theme = models.CharField(max_length=20, default='default')  # for code/markdown editor
+    auto_preview = models.BooleanField(default=True)
+    spell_check = models.BooleanField(default=True)
+
+    # Custom JSON field for additional preferences
+    custom_preferences = models.JSONField(default=dict, blank=True)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'User Preferences'
+        verbose_name_plural = 'User Preferences'
+
+    def __str__(self):
+        return f"{self.user.username}'s Preferences"
+
+    @classmethod
+    def get_or_create_for_user(cls, user):
+        """
+        Get or create preferences for a user with default values
+        """
+        preferences, created = cls.objects.get_or_create(
+            user=user,
+            defaults={
+                'theme': 'light',
+                'language': 'en',
+                'font_size': 'medium',
+                'posts_per_page': 10,
+                'timezone': 'UTC',
+            }
+        )
+        return preferences
+
+    def to_dict(self):
+        """
+        Convert preferences to dictionary for frontend consumption
+        """
+        return {
+            'theme': self.theme,
+            'font_size': self.font_size,
+            'high_contrast': self.high_contrast,
+            'reduce_animations': self.reduce_animations,
+            'language': self.language,
+            'timezone': self.timezone,
+            'date_format': self.date_format,
+            'time_format': self.time_format,
+            'posts_per_page': self.posts_per_page,
+            'show_profile_image': self.show_profile_image,
+            'auto_save_drafts': self.auto_save_drafts,
+            'show_online_status': self.show_online_status,
+            'email_notifications': self.email_notifications,
+            'browser_notifications': self.browser_notifications,
+            'marketing_emails': self.marketing_emails,
+            'editor_theme': self.editor_theme,
+            'auto_preview': self.auto_preview,
+            'spell_check': self.spell_check,
+            'custom_preferences': self.custom_preferences,
+        }
+
+
 

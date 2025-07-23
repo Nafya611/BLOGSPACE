@@ -1,4 +1,4 @@
-from  Core.models import User
+from  Core.models import User, UserPreferences
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth import (
@@ -100,4 +100,50 @@ class AuthTokenSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg,code='authentication')
         attrs['user']=user
         return attrs
+
+
+class UserPreferencesSerializer(serializers.ModelSerializer):
+    """Serializer for user preferences"""
+
+    class Meta:
+        model = UserPreferences
+        fields = [
+            'theme', 'font_size', 'high_contrast', 'reduce_animations',
+            'language', 'timezone', 'date_format', 'time_format',
+            'posts_per_page', 'show_profile_image', 'auto_save_drafts',
+            'show_online_status', 'email_notifications', 'browser_notifications',
+            'marketing_emails', 'editor_theme', 'auto_preview', 'spell_check',
+            'custom_preferences'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+
+    def validate_posts_per_page(self, value):
+        """Validate posts per page is within reasonable limits"""
+        if value < 1 or value > 100:
+            raise serializers.ValidationError("Posts per page must be between 1 and 100")
+        return value
+
+    def validate_theme(self, value):
+        """Validate theme choice"""
+        valid_themes = ['light', 'dark', 'auto']
+        if value not in valid_themes:
+            raise serializers.ValidationError(f"Theme must be one of: {', '.join(valid_themes)}")
+        return value
+
+    def validate_language(self, value):
+        """Validate language choice"""
+        valid_languages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh']
+        if value not in valid_languages:
+            raise serializers.ValidationError(f"Language must be one of: {', '.join(valid_languages)}")
+        return value
+
+
+class UserWithPreferencesSerializer(serializers.ModelSerializer):
+    """Serializer for user with embedded preferences"""
+    preferences = UserPreferencesSerializer(read_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'profile_image_url', 'preferences']
+        read_only_fields = ['id', 'profile_image_url']
 

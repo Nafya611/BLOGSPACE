@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import signup,create_token,manage_user,logout_user,upload_profile_image,get_user_profile
+from .views import (
+    signup, create_token, manage_user, logout_user, upload_profile_image, get_user_profile,
+    user_preferences, reset_user_preferences, user_profile_with_preferences, bulk_update_preferences
+)
 from .google_auth import google_auth, google_oauth_config, google_login_simple, google_oauth_callback
 from .google_test import google_oauth_test, google_oauth_callback_test
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -12,6 +15,12 @@ urlpatterns=[
     path('upload-profile-image/',upload_profile_image,name='upload_profile_image'),
     path('logout/',logout_user,name='logut'),
     path('profile/<str:username>/',get_user_profile,name='get_user_profile'),
+
+    # User Preferences endpoints
+    path('preferences/', user_preferences, name='user_preferences'),
+    path('preferences/reset/', reset_user_preferences, name='reset_user_preferences'),
+    path('profile/me/preferences/', user_profile_with_preferences, name='user_profile_with_preferences'),
+    path('preferences/bulk-update/', bulk_update_preferences, name='bulk_update_preferences'),
 
     # Google OAuth endpoints (main)
     path('google-auth/', google_auth, name='google_auth'),

@@ -39,6 +39,12 @@ export const API_ENDPOINTS = {
   USERS: '/api/user/',
   USER_PROFILE_BY_USERNAME: (username) => `/api/user/profile/${username}/`,
 
+  // User Preferences endpoints
+  USER_PREFERENCES: '/api/user/preferences/',
+  RESET_PREFERENCES: '/api/user/preferences/reset/',
+  USER_PROFILE_WITH_PREFERENCES: '/api/user/profile/me/preferences/',
+  BULK_UPDATE_PREFERENCES: '/api/user/preferences/bulk-update/',
+
   // Admin endpoints
   ADMIN_POSTS: '/api/Post/admin/posts/',
   ADMIN_POST: (slug) => `/api/Post/admin/post/${slug}`,
