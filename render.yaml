@@ -37,11 +37,17 @@ services:
           name: blog-db
           property: port
       - key: GOOGLE_OAUTH_CLIENT_ID
-        value: ""  # Set this in Render dashboard
+        value: ""  # Set this in Render dashboard with your actual Google OAuth Client ID
       - key: GOOGLE_OAUTH_CLIENT_SECRET
-        value: ""  # Set this in Render dashboard
+        value: ""  # Set this in Render dashboard with your actual Google OAuth Client Secret
       - key: GOOGLE_OAUTH_REDIRECT_URI
         value: "https://blogspace-vuer.onrender.com/api/user/google-callback/"
+      - key: CLOUDINARY_CLOUD_NAME
+        value: ""  # Set this in Render dashboard with your Cloudinary cloud name
+      - key: CLOUDINARY_API_KEY
+        value: ""  # Set this in Render dashboard with your Cloudinary API key
+      - key: CLOUDINARY_API_SECRET
+        value: ""  # Set this in Render dashboard with your Cloudinary API secret
       - key: ALLOW_ALL_ORIGINS
         value: "true"
       - key: PORT

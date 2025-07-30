@@ -294,7 +294,8 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    # Add this as well
+    "https://blogspace-frontend.vercel.app",  # Add your actual Vercel frontend URL
+    "https://your-frontend-domain.vercel.app",  # Update this with your actual frontend URL
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -350,6 +351,21 @@ SOCIALACCOUNT_PROVIDERS = {
         'FETCH_USERINFO': True,
     }
 }
+
+# Cloudinary configuration
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+    secure=True
+)
+
+# Default file storage for production
+DEFAULT_FILE_STORAGE = 'Core.storage.CloudinaryStorage'
 
 # Security settings for production
 if not DEBUG:
