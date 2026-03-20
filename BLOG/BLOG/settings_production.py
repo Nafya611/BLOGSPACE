@@ -113,8 +113,11 @@ if DATABASE_URL and DATABASE_URL.strip():
     try:
         # Parse the database URL with SSL required
         db_config = dj_database_url.parse(
-            DATABASE_URL, conn_max_age=600, ssl_require=True
+            DATABASE_URL, conn_max_age=0, ssl_require=True
         )
+        # Enable connection health checks to prevent "SSL connection has been closed unexpectedly" 
+        # when connections are dropped by the server or network
+        db_config['CONN_HEALTH_CHECKS'] = True
         DATABASES = {"default": db_config}
         print("Successfully parsed DATABASE_URL with SSL required")
     except Exception as e:
